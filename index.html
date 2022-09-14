@@ -4,9 +4,61 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="hogwarts.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
     <title>The Hacked Hogwarts</title>
 </head>
 <body>
+
+  <!--   copied from cleaning hogwarts files:  -->
+
+    <h1>Hogwarts Students</h1>
+
+    <p>
+        Filter:
+        <button class="filter" data-action="filter" data-filter="expelled" id="button_expelled">See expelled students</button>
+        <button class="filter" data-action="filter" data-filter="inrolled" id="button_inrolled">See current students</button>
+        <button class="filter" data-action="filter" data-filter="gryffindor" id="button_gryffindor">See Gryffindor students</button>
+        <button class="filter" data-action="filter" data-filter="ravenclaw" id="button_ravenclaw">See Ravenclaw students</button>
+        <button class="filter" data-action="filter" data-filter="hufflepuff" id="button_hufflepuff">See Hufflepuff students</button>
+        <button class="filter" data-action="filter" data-filter="slytherin" id="button_Slytherin">See Slytherin students</button>
+        <button class="filter" data-action="filter" data-filter="*" id="button_all">all</button>
+      </p>
+    
+    <table id="list">
+      <thead>
+        <tr id="sorting">
+          <th data-action="sort" data-sort-direction="asc" data-sort="firstname">First name</th>
+          <th>Middle name</th>
+          <th data-action="sort" data-sort-direction="asc" data-sort="lastname">Last name</th>
+          <th>Nick name</th>
+          <th>Image</th>
+          <th>House</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Hogwarts template will be copied and inserted here -->
+        
+      </tbody>
+    </table>
+
+    <template id="hogwarts_template">
+      <tr>
+        <td data-field="firstname">FIRST NAME</td>
+        <td data-field="middlename">MIDDLE NAME</td>
+        <td data-field="lastname">LAST NAME</td>
+        <td data-field="nickname">NICK NAME</td>
+        <td data-field="image">IMAGE</td>
+        <td data-field="house">HOUSE</td>
+      </tr>
+    </template>
+
+
     <script src="hogwarts.js"></script>
 </body>
 </html>

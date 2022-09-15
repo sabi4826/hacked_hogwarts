@@ -6,15 +6,18 @@ h1 {
     font-family: 'Cinzel Decorative', cursive;
     font-weight: 400;
     font-size: 6rem;
-    
 }
 
 table, tr, th {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-family: 'Playfair Display', serif;
 }
 
 p, td {
     font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
+    font-size: 2.3rem;
 }
+
+[data-action] {
+    cursor: pointer;
+  }

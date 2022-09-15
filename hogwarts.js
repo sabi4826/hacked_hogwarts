@@ -1,5 +1,7 @@
 "use strict";
 
+// ------------------ MODEL ---------------------
+
 window.addEventListener("DOMContentLoaded", start);
 
 // empty array for cloning new Object:
@@ -13,7 +15,11 @@ const Student = {
   nickname: "",
   image: "",
   house: "",
+  // flag on expelled or not, set to false:
   isExpelled: false,
+  // prefect or squad as flags in object?
+  // isPrefect: false;
+  // isSquad: false;
 };
 
 function start() {
@@ -45,44 +51,43 @@ function prepareObjects(jsonData) {
     const student = Object.create(Student);
 
     // TRIM WHITE SPACE + REMOVE DOUBLE WHITE SPACE:
-    let fullnameRemoveDoubleSpaces = jsonObject.fullname.replaceAll("  ", " ");
-    let trimFullname = fullnameRemoveDoubleSpaces.trim();
+    let trimFullname = jsonObject.fullname.trim();
+    let fullName = trimFullname.replaceAll("  ", " ");
     let trimHouse = jsonObject.house.trim();
 
     console.log(`trimFullname is:_${trimFullname}_`); // no spaces: it works
 
     // make lets for the desired categories:
     // FIRST NAME:
-    let firstname = trimFullname.substring(0, jsonObject.fullname.indexOf(" ")); // finds first word from [0] to first " ".
+    let firstname = fullName.substring(0, fullName.indexOf(" ")); // finds first word from [0] to first " ".
+    //console.log(`firstname is _${firstname}_`);
     let firstnameTrim = firstname.trim();
     let firstToUpperCase = firstnameTrim.substring(0, 1).toUpperCase(); // takes first letter and makes it uppercase.
     let firstToLowerCase = firstnameTrim.substring(1).toLowerCase(); // takes the rest of the word and makes it lowercase.
     firstname = `${firstToUpperCase}${firstToLowerCase}`; //puts the two substrings together.
-    console.log("firstname is:", firstname);
 
     // MIDDLE NAME:
-    let middlename = trimFullname.substring(jsonObject.fullname.indexOf(" ") + 1, jsonObject.fullname.lastIndexOf(" ")); // finds name between the first and second " ".
-    if (jsonObject.fullname.indexOf(" ") === jsonObject.fullname.lastIndexOf(" ")) {
+    let middlename = fullName.substring(fullName.indexOf(" ") + 1, fullName.lastIndexOf(" ")); // finds name between the first and second " ".
+    if (fullName.indexOf(" ") === fullName.lastIndexOf(" ")) {
       console.log("Middlename is undefined");
     } else {
-      let middlenameTrim = middlename.trim(); // neccesary to trim after all the previous trimming??
-      let middleToUpperCase = middlenameTrim.substring(0, 1).toUpperCase();
-      let middleToLowerCase = middlenameTrim.substring(1).toLowerCase();
+      let middleToUpperCase = middlename.substring(0, 1).toUpperCase();
+      let middleToLowerCase = middlename.substring(1).toLowerCase();
       middlename = `${middleToUpperCase}${middleToLowerCase}`;
-      console.log("middlename is:", middlename);
+      //console.log("middlename is:", middlename);
     }
 
     // LAST NAME:
-    let lastname = trimFullname.substring(jsonObject.fullname.lastIndexOf(" ")); // finds word after last " ".
+    let lastname = fullName.substring(fullName.lastIndexOf(" ")); // finds word after last " ".
     let lastnameTrim = lastname.trim();
     let lastToUpperCase = lastnameTrim.substring(0, 1).toUpperCase();
     let lastToLowerCase = lastnameTrim.substring(1).toLowerCase();
     lastname = `${lastToUpperCase}${lastToLowerCase}`;
-    console.log("lastname is:", lastname);
+    //console.log("lastname is:", lastname);
 
     // NICK NAME:
-    //if (jsonObject.fullname.indexOf("\\"))
-    //let nickname = trimFullname.substring(jsonObject.fullname.indexOf("\\") + 2, jsonObject.fullname.lastIndexOf("\\")); // a double backslash equals one i " "
+    //if (fullName.indexOf("\\"))
+    //let nickname = fullName.substring(fullName.indexOf("\\") + 2, fullName.lastIndexOf("\\")); // a double backslash equals one i " "
     //console.log("nickname is:", nickname);
 
     // IMAGE:
@@ -110,6 +115,8 @@ function prepareObjects(jsonData) {
   displayList(allStudents);
 }
 
+// ----------------- CONTROLLER -------------------
+
 // FILTERING:
 
 function selectFilter(event) {
@@ -122,7 +129,7 @@ function filterList(filter) {
   console.log("filterList loaded");
   let filteredList = allStudents;
 
-  // see which filter was picked:
+  // see which filter was picked: ("gryffindor" etc. comes from data-filter in in filter in HTML):
   if (filter === "expelled") {
     filteredList = allStudents.filter(isExpelled);
   } else if (filter === "gryffindor") {
@@ -133,6 +140,10 @@ function filterList(filter) {
     filteredList = allStudents.filter(isHufflepuff);
   } else if (filter === "slytherin") {
     filteredList = allStudents.filter(isSlytherin);
+  } else if (filter === "prefect") {
+    filteredList = allStudents.filter(isPrefect);
+  } else if (filter === "squad") {
+    filteredList = allStudents.filter(isSquad);
   }
 
   console.log("filteredList is", filteredList);
@@ -141,17 +152,13 @@ function filterList(filter) {
 }
 
 function isExpelled(student) {
-  // TO DO: make expelled(?) a property in object, so I can use it here and see it in pop-up:
+  // isExpelled set as flag in Object, set to false by default:
   return student.isExpelled === true;
-}
-
-function isInrolled(student) {
-  // TO DO: make expelled(?) a property in object, so I can use it here and see it in pop-up:
-  return student.inrolled === "inrolled";
+  // call function here that removes student from all list? Or do it here?
 }
 
 function isGryffindor(student) {
-  //console.log("isGryffindor loaded", student.house);
+  // big capital letter because thats how it's spelled in student.house:
   return student.house === "Gryffindor";
 }
 
@@ -165,6 +172,14 @@ function isHufflepuff(student) {
 
 function isSlytherin(student) {
   return student.house === "Slytherin";
+}
+
+function isPrefect(student) {
+  return student.isPrefect === true;
+}
+
+function isSquad(student) {
+  return student.isSquad === true;
 }
 
 // SORTING:
@@ -181,11 +196,12 @@ function sortList(sortBy) {
 
 //  --------------------- VIEW --------------------------
 
+// function that clears existing list and builds new with "neutral" parameter studentList (that is fed a new array each time):
 function displayList(studentList) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
 
-  // build a new list
+  // build a new list - studentList is the parameter, receives different arrays:
   studentList.forEach(displayStudent);
 }
 
@@ -199,7 +215,6 @@ function displayStudent(student) {
   clone.querySelector("[data-field=lastname]").textContent = student.lastname;
   clone.querySelector("[data-field=nickname]").textContent = student.nickname;
   // clone.querySelector("[data-field=image]").textContent = student.image;
-  // TJEK DATA FIELD HOUSE, DET HEDDER DE JO IKKE MERE!!!
   clone.querySelector("[data-field=house]").textContent = student.house;
 
   // append clone to list

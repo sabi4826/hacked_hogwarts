@@ -13,6 +13,7 @@ const Student = {
   nickname: "",
   image: "",
   house: "",
+  isExpelled: false,
 };
 
 function start() {
@@ -106,7 +107,7 @@ function prepareObjects(jsonData) {
     allStudents.push(student);
   });
 
-  displayList();
+  displayList(allStudents);
 }
 
 // FILTERING:
@@ -124,8 +125,6 @@ function filterList(filter) {
   // see which filter was picked:
   if (filter === "expelled") {
     filteredList = allStudents.filter(isExpelled);
-  } else if (filter === "inrolled") {
-    filteredList = allStudents.filter(isInrolled);
   } else if (filter === "gryffindor") {
     filteredList = allStudents.filter(isGryffindor);
   } else if (filter === "ravenclaw") {
@@ -143,7 +142,7 @@ function filterList(filter) {
 
 function isExpelled(student) {
   // TO DO: make expelled(?) a property in object, so I can use it here and see it in pop-up:
-  return student.expelled === "expelled";
+  return student.isExpelled === true;
 }
 
 function isInrolled(student) {
@@ -152,20 +151,20 @@ function isInrolled(student) {
 }
 
 function isGryffindor(student) {
-  console.log("isGryffindor loaded");
-  return student.house === "gryffindor";
+  //console.log("isGryffindor loaded", student.house);
+  return student.house === "Gryffindor";
 }
 
 function isRavenclaw(student) {
-  return student.house === "ravenclaw";
+  return student.house === "Ravenclaw";
 }
 
 function isHufflepuff(student) {
-  return student.house === "hufflepuff";
+  return student.house === "Hufflepuff";
 }
 
 function isSlytherin(student) {
-  return student.slytherin === "slytherin";
+  return student.house === "Slytherin";
 }
 
 // SORTING:
@@ -182,12 +181,12 @@ function sortList(sortBy) {
 
 //  --------------------- VIEW --------------------------
 
-function displayList(filter) {
+function displayList(studentList) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
 
   // build a new list
-  allStudents.forEach(displayStudent);
+  studentList.forEach(displayStudent);
 }
 
 function displayStudent(student) {
@@ -200,6 +199,7 @@ function displayStudent(student) {
   clone.querySelector("[data-field=lastname]").textContent = student.lastname;
   clone.querySelector("[data-field=nickname]").textContent = student.nickname;
   // clone.querySelector("[data-field=image]").textContent = student.image;
+  // TJEK DATA FIELD HOUSE, DET HEDDER DE JO IKKE MERE!!!
   clone.querySelector("[data-field=house]").textContent = student.house;
 
   // append clone to list

@@ -15,11 +15,13 @@ const Student = {
   nickname: "",
   image: "",
   house: "",
+  gender: "",
   // flag on expelled or not, set to false:
   isExpelled: false,
   // prefect or squad as flags in object?
-  // isPrefect: false;
-  // isSquad: false;
+  isPrefect: false,
+  isSquad: false,
+  bloodStatus: "",
 };
 
 function start() {
@@ -54,6 +56,7 @@ function prepareObjects(jsonData) {
     let trimFullname = jsonObject.fullname.trim();
     let fullName = trimFullname.replaceAll("  ", " ");
     let trimHouse = jsonObject.house.trim();
+    let gender = jsonObject.gender.trim();
 
     console.log(`trimFullname is:_${trimFullname}_`); // no spaces: it works
 
@@ -83,33 +86,78 @@ function prepareObjects(jsonData) {
     let lastToLowerCase = lastnameTrim.substring(1).toLowerCase();
     lastname = `${lastToUpperCase}${lastToLowerCase}`;
 
+    // (fullName.includes("-"))
+
     // NICK NAME:
     //if (fullName.indexOf("\\"))
     //let nickname = fullName.substring(fullName.indexOf("\\") + 2, fullName.lastIndexOf("\\")); // a double backslash equals one i " "
     //console.log("nickname is:", nickname);
 
-    // IMAGE:
-    // HOW TO SOLVE THIS???
-    //console.log(image);
+    // IMAGES:
+    // return values from function haveImg: code from Nancy:
+    let image = haveImg(fullName);
+    console.log("image is", image); //
 
     // HOUSE:
     let houseToUpperCase = trimHouse.substring(0, 1).toUpperCase();
     let houseToLowerCase = trimHouse.substring(1).toLowerCase();
     let studentHouse = `${houseToUpperCase}${houseToLowerCase}`;
 
+    // SET MORE PROPERTIES FOR OBJECT HERE? (PREFECT, SQUAD, BLOOD):
+
     // set new properties to object values (the new object (student) created from prototype) - kan også gøres direkte uden lets først:
     student.firstname = firstname;
     student.middlename = middlename;
     student.lastname = lastname;
     //student.nickname = nickname;
-    // student.image = image;
+    student.image = image;
+    //console.log("student.image is:", student.image); - displays same as image.
     student.house = studentHouse;
+    student.gender = gender;
+    //student.isExpelled: variable,
+    // prefect or squad as flags in object?
+    //student.isPrefect: var here,
+    //student.isSquad: false,
+    //student.bloodStatus: var here
+
+    // eventlisteners on all students for popup:
+    document.querySelectorAll("student.firstname").forEach((name) => name.addEventListener("click", showPopUp));
 
     // push to empty array allStudents:
     allStudents.push(student);
   });
 
   displayList(allStudents);
+}
+
+// image function, return values to function above - not properly though:
+function haveImg(fullName) {
+  // images are displayed with the last name and first letter of the first name
+  let imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, 1).toLowerCase()}.png`;
+
+  // for special cases:
+  // if img has no lastname:
+  if (fullName === "Leanne") {
+    //console.log("imgSrc Leanne = `No_Image`");
+    return (imgSrc = `No_Image`);
+    //
+  }
+
+  // if it includes "-" name:
+  else if (fullName.includes("-")) {
+    //console.log((imgSrc = `../images/${fullName.substring(fullName.lastIndexOf("-") + 1).toLowerCase()}_${fullName.substring(0, 1).toLowerCase()}.png`));
+    return (imgSrc = `../images/${fullName.substring(fullName.lastIndexOf("-") + 1).toLowerCase()}_${fullName.substring(0, 1).toLowerCase()}.png`);
+  }
+
+  // include two surname patil:
+  else if (fullName.toLowerCase().includes("patil")) {
+    // console.log((imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, fullName.indexOf(" ")).toLowerCase()}.png`));
+    return (imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, fullName.indexOf(" ")).toLowerCase()}.png`);
+  }
+
+  return imgSrc;
+  console.log("imgSrc: ", imgSrc); //- replaced imgSrc with image in student.image:
+  //student.image = imgSrc;
 }
 
 // ----------------- CONTROLLER -------------------
@@ -221,6 +269,7 @@ function sortList(sortBy, sortDirect) {
 
 //  --------------------- VIEW --------------------------
 
+// SHOW LISTS ON FRONTPAGE:
 // function that clears existing list and builds new with "neutral" parameter studentList (that is fed a new array each time):
 function displayList(studentList) {
   // clear the list
@@ -239,9 +288,33 @@ function displayStudent(student) {
   clone.querySelector("[data-field=middlename]").textContent = student.middlename;
   clone.querySelector("[data-field=lastname]").textContent = student.lastname;
   clone.querySelector("[data-field=nickname]").textContent = student.nickname;
-  // clone.querySelector("[data-field=image]").textContent = student.image;
+  clone.querySelector("[data-field=image]").src = student.image;
   clone.querySelector("[data-field=house]").textContent = student.house;
+  clone.querySelector("[data-field=firstname]").addEventListener("click", () => showPopUp(student));
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
+}
+
+// SHOW POP UP:
+
+function showPopUp(student) {
+  console.log("showPopUp func loaded");
+  // display popup:
+  popup.style.display = "block";
+  // define content:
+  popup.querySelector(".art_h2").textContent = student.firstname + " " + student.lastname;
+  //popup.querySelector(".art_image").src = student.image;
+  popup.querySelector(".art_firstname").textContent = student.firstname;
+  popup.querySelector(".art_middlename").textContent = student.middlename;
+  popup.querySelector(".art_lastname").textContent = student.lastname;
+  //popup.querySelector(".art_nickname").textContent = student.nickname;
+  popup.querySelector(".art_gender").textContent = student.gender;
+  popup.querySelector(".art_house").textContent = student.house;
+  //popup.querySelector(".art_prefect").textContent = student.isPrefect;
+  //popup.querySelector(".art_squad").textContent = student.isSquad;
+  //popup.querySelector(".art_blood").textContent = student.bloodStatus;
+
+  // eventlistener for close button:
+  document.querySelector("#pop_close_button").addEventListener("click", () => (popup.style.display = "none"));
 }

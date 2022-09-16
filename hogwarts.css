@@ -18,6 +18,38 @@ p, td {
     font-size: 2.3rem;
 }
 
-[data-action] {
+[data-field="firstname"] {
+    text-decoration: underline;
     cursor: pointer;
-  }
+}
+
+#popup {
+display: none;
+cursor: pointer;
+background-color: aquamarine;
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+overflow: scroll;
+}
+
+#popup article {
+    width: 80wv;
+    display: flex;
+    border-radius: 25px;
+    background-color: azure;
+}
+
+#pop_close_button {
+    position: fixed;
+    padding: 1em;
+    font-size: 1.7em;
+    font-weight: bolder;
+    cursor: pointer;
+}
+
+.showPopUp {
+    display: block;
+}

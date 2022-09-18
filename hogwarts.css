@@ -18,7 +18,8 @@ p, td {
     font-size: 2.3rem;
 }
 
-[data-field="firstname"] {
+[data-field="firstname"],
+[data-action="sort"] {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -36,8 +37,11 @@ overflow: scroll;
 }
 
 #popup article {
-    width: 80wv;
+    width: 98vw;
+    height: 98vh;
     display: flex;
+    flex-direction: column;
+    margin: 0 auto;
     border-radius: 25px;
     background-color: azure;
 }
@@ -52,4 +56,17 @@ overflow: scroll;
 
 .showPopUp {
     display: block;
+}
+
+.art_h2 {
+    font-size: 3rem;
+    text-align: center;
+}
+
+article p {
+    font-size: 2.2rem;
+}
+
+span {
+font-size: 2.2rem;
 }

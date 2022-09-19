@@ -142,7 +142,6 @@ function findNickName(fullName) {
   //let nickname = fullName.substring(fullName.indexOf("\\") + 2, fullName.lastIndexOf("\\")); // a double backslash equals one i " "
   //console.log("nickname is:", nickname);
 }
-
 // IMAGE function, return values to function above - not properly though:
 function haveImg(fullName) {
   // images are displayed with the last name and first letter of the first name:
@@ -282,6 +281,27 @@ function sortList(sortBy, sortDirect) {
   displayList(sortedList);
 }
 
+// ADD PREFECTS AND TO SQUAD:
+
+function addPrefect(event) {
+  console.log("addPrefect func loaded");
+
+  // isPrefect set to true
+  isPrefect = true; // ej, her sættes flag jo bare til true, det er nok ikke rigtigt!
+  console.log("this.student is", isPrefect); // får true - men kan ikke ses på liste over prefects.
+  //
+  // check only two prefects per house
+  // display pop up again with added student?
+}
+
+function addToSquad(student) {
+  console.log("addToSquad func loaded");
+
+  // isSquad set to true
+
+  // display pop up again with added student?
+}
+
 //  --------------------- VIEW --------------------------
 
 // SHOW LISTS ON FRONTPAGE:
@@ -306,6 +326,9 @@ function displayStudent(student) {
   clone.querySelector("[data-field=image]").src = student.image;
   clone.querySelector("[data-field=house]").textContent = student.house;
   clone.querySelector("[data-field=firstname]").addEventListener("click", () => showPopUp(student));
+  // eventlisteners for buttons:
+  clone.querySelector("#button_prefect").addEventListener("click", () => addPrefect(event));
+  clone.querySelector("#button_squad").addEventListener("click", () => addToSquad(event));
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
@@ -326,8 +349,8 @@ function showPopUp(student) {
   popup.querySelector(".art_nickname").textContent = student.nickname;
   popup.querySelector(".art_gender").textContent = student.gender;
   popup.querySelector(".art_house").textContent = student.house;
-  //popup.querySelector(".art_prefect").textContent = student.isPrefect;
-  //popup.querySelector(".art_squad").textContent = student.isSquad;
+  popup.querySelector(".art_prefect").textContent = student.isPrefect;
+  popup.querySelector(".art_squad").textContent = student.isSquad;
   //popup.querySelector(".art_blood").textContent = student.bloodStatus;
 
   // eventlistener for close button:

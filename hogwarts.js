@@ -57,8 +57,6 @@ function prepareObjects(jsonData) {
     let trimHouse = jsonObject.house.trim();
     let gender = jsonObject.gender.trim();
 
-    console.log(`trimFullname is:_${trimFullname}_`); // no spaces: it works
-
     // make lets for the desired categories:
     // FIRST NAME:
     let firstname = prepareFirstname(fullName);
@@ -106,7 +104,9 @@ function prepareObjects(jsonData) {
   displayList(allStudents);
 }
 
-// MAKE FIRSTNAME: LOOKS LIKE ITS WORKING
+// DELEGATED FUNCTIONS THAT RETURN NAMES ETC.:
+
+// MAKE FIRSTNAME:
 function prepareFirstname(fullName) {
   let firstname1 = fullName.substring(0, fullName.indexOf(" ")); // finds first word from [0] to first " ".
   let firstnameTrim = firstname1.trim();
@@ -117,10 +117,12 @@ function prepareFirstname(fullName) {
 
 // MAKE MIDDLENAME:
 function prepareMiddlename(fullName) {
-  let middlename1 = fullName.substring(fullName.indexOf(" ") + 1, fullName.lastIndexOf(" ")); // finds name between the first and second " ".
   if (fullName.indexOf(" ") === fullName.lastIndexOf(" ")) {
-    console.log("Middlename is undefined");
+    return ` `;
+  } else if (fullName.includes("Ernie")) {
+    return ` `;
   } else {
+    let middlename1 = fullName.substring(fullName.indexOf(" ") + 1, fullName.lastIndexOf(" ")); // finds name between the first and second " ".
     let middleToUpperCase = middlename1.substring(0, 1).toUpperCase();
     let middleToLowerCase = middlename1.substring(1).toLowerCase();
     return `${middleToUpperCase}${middleToLowerCase}`;
@@ -138,19 +140,15 @@ function prepareLastname(fullName) {
   // (fullName.includes("-"))
 }
 
-// FIND NICKNAME:
+// FIND NICKNAME: (Ernie skal være med stort!!)
 function prepareNickName(fullName) {
   let bloodyNickName;
-  if (fullName.includes("ernie")) {
-    bloodyNickName = fullName.substring(fullName.indexOf(" "), fullName.lastIndexOf(" "));
+  if (fullName.includes("Ernie")) {
+    bloodyNickName = fullName.substring(fullName.indexOf(" ") + 1, fullName.lastIndexOf(" "));
   } else {
-    bloodyNickName = "none";
+    bloodyNickName = " ";
   }
   return bloodyNickName;
-
-  //if (fullName.indexOf("\\"))
-  //let nickname = fullName.substring(fullName.indexOf("\\") + 2, fullName.lastIndexOf("\\")); // a double backslash equals one i " "
-  //console.log("nickname is:", nickname);
 }
 // PREPARE IMAGE:
 function haveImg(fullName) {
@@ -296,11 +294,7 @@ function addPrefect(student) {
   console.log("addPrefect func loaded");
 
   // set isPrefect to true:
-  this.student.isPrefect = true;
-  console.log("this.student.isPrefect", this.student.isPrefect);
-
-  // add new prefect to filteredList - not necessary?
-
+  student.isPrefect = !student.isPrefect;
   // check only two prefects per house:
   // display pop ups with prefect students:
 }
@@ -308,16 +302,20 @@ function addPrefect(student) {
 function addToSquad(student) {
   console.log("addToSquad func loaded");
 
-  // isSquad set to true
-
+  // isSquad set to true:
+  student.isSquad = !student.isSquad;
   // display pop up again with added student?
 }
+
+// EXPEL STUDENT:
 
 function expelStudent(student) {
   console.log("expelStudent func loaded");
 
+  student.isExpelled = !student.isExpelled;
   // set isExpelled to true:
   // remove student from list of students:
+  // how?
 }
 
 //  --------------------- VIEW --------------------------
@@ -334,22 +332,23 @@ function displayList(studentList) {
 
 function displayStudent(student) {
   console.log("displayStudent loaded");
-  // create clone
+  // create clone:
   const clone = document.querySelector("#hogwarts_template").content.cloneNode(true);
-  // set clone data
+  // set clone data:
   clone.querySelector("[data-field=firstname]").textContent = student.firstname;
   clone.querySelector("[data-field=middlename]").textContent = student.middlename;
   clone.querySelector("[data-field=lastname]").textContent = student.lastname;
   clone.querySelector("[data-field=nickname]").textContent = student.nickname;
   clone.querySelector("[data-field=image]").src = student.image;
   clone.querySelector("[data-field=house]").textContent = student.house;
+  // eventlistener on pop up (firstname):
   clone.querySelector("[data-field=firstname]").addEventListener("click", () => showPopUp(student));
   // eventlisteners for buttons:
   clone.querySelector("#button_prefect").addEventListener("click", () => addPrefect(student));
   clone.querySelector("#button_squad").addEventListener("click", () => addToSquad(student));
   clone.querySelector("#button_expel").addEventListener("click", () => expelStudent(student));
 
-  // append clone to list
+  // append clone to list:
   document.querySelector("#list tbody").appendChild(clone);
 }
 

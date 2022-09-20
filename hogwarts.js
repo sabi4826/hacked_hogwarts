@@ -16,9 +16,8 @@ const Student = {
   image: "",
   house: "",
   gender: "",
-  // flag on expelled or not, set to false:
+  // flag on expelled or not/isPrefect/isSquad, set to false:
   isExpelled: false,
-  // prefect or squad as flags in object?
   isPrefect: false,
   isSquad: false,
   bloodStatus: "",
@@ -62,44 +61,28 @@ function prepareObjects(jsonData) {
 
     // make lets for the desired categories:
     // FIRST NAME:
-    let firstname = fullName.substring(0, fullName.indexOf(" ")); // finds first word from [0] to first " ".
-    let firstnameTrim = firstname.trim();
-    let firstToUpperCase = firstnameTrim.substring(0, 1).toUpperCase(); // takes first letter and makes it uppercase.
-    let firstToLowerCase = firstnameTrim.substring(1).toLowerCase(); // takes the rest of the word and makes it lowercase.
-    firstname = `${firstToUpperCase}${firstToLowerCase}`; //puts the two substrings together.
+    let firstname = prepareFirstname(fullName);
 
     // MIDDLE NAME:
-    let middlename = fullName.substring(fullName.indexOf(" ") + 1, fullName.lastIndexOf(" ")); // finds name between the first and second " ".
-    if (fullName.indexOf(" ") === fullName.lastIndexOf(" ")) {
-      console.log("Middlename is undefined");
-    } else {
-      let middleToUpperCase = middlename.substring(0, 1).toUpperCase();
-      let middleToLowerCase = middlename.substring(1).toLowerCase();
-      middlename = `${middleToUpperCase}${middleToLowerCase}`;
-      //console.log("middlename is:", middlename);
-    }
+    let middlename = prepareMiddlename(fullName);
 
     // LAST NAME:
-    let lastname = fullName.substring(fullName.lastIndexOf(" ")); // finds word after last " ".
-    let lastnameTrim = lastname.trim();
-    let lastToUpperCase = lastnameTrim.substring(0, 1).toUpperCase();
-    let lastToLowerCase = lastnameTrim.substring(1).toLowerCase();
-    lastname = `${lastToUpperCase}${lastToLowerCase}`;
-
-    // (fullName.includes("-"))
+    let lastname = prepareLastname(fullName);
 
     // NICK NAME:
-    let nickname = findNickName(fullName);
+    let nickname = prepareNickName(fullName);
 
     // IMAGES:
     // return values from function haveImg: code from Nancy:
     let image = haveImg(fullName);
-    console.log("image is", image); //
 
     // HOUSE:
     let houseToUpperCase = trimHouse.substring(0, 1).toUpperCase();
     let houseToLowerCase = trimHouse.substring(1).toLowerCase();
     let studentHouse = `${houseToUpperCase}${houseToLowerCase}`;
+
+    // BLOOD STATUS:
+    let theBloodStatus = prepareBloodStatus();
 
     // SET MORE PROPERTIES FOR OBJECT HERE? (PREFECT, SQUAD, BLOOD):
 
@@ -109,14 +92,9 @@ function prepareObjects(jsonData) {
     student.lastname = lastname;
     student.nickname = nickname;
     student.image = image;
-    //console.log("student.image is:", student.image); - displays same as image.
     student.house = studentHouse;
     student.gender = gender;
-    //student.isExpelled: variable,
-    // prefect or squad as flags in object?
-    //student.isPrefect: var here,
-    //student.isSquad: false,
-    //student.bloodStatus: var here
+    //student.bloodStatus: var here??
 
     // eventlisteners on all students for popup:
     document.querySelectorAll("student.firstname").forEach((name) => name.addEventListener("click", showPopUp));
@@ -128,8 +106,40 @@ function prepareObjects(jsonData) {
   displayList(allStudents);
 }
 
+// MAKE FIRSTNAME: LOOKS LIKE ITS WORKING
+function prepareFirstname(fullName) {
+  let firstname1 = fullName.substring(0, fullName.indexOf(" ")); // finds first word from [0] to first " ".
+  let firstnameTrim = firstname1.trim();
+  let firstToUpperCase = firstnameTrim.substring(0, 1).toUpperCase(); // takes first letter and makes it uppercase.
+  let firstToLowerCase = firstnameTrim.substring(1).toLowerCase(); // takes the rest of the word and makes it lowercase.
+  return `${firstToUpperCase}${firstToLowerCase}`; //puts the two substrings together.
+}
+
+// MAKE MIDDLENAME:
+function prepareMiddlename(fullName) {
+  let middlename1 = fullName.substring(fullName.indexOf(" ") + 1, fullName.lastIndexOf(" ")); // finds name between the first and second " ".
+  if (fullName.indexOf(" ") === fullName.lastIndexOf(" ")) {
+    console.log("Middlename is undefined");
+  } else {
+    let middleToUpperCase = middlename1.substring(0, 1).toUpperCase();
+    let middleToLowerCase = middlename1.substring(1).toLowerCase();
+    return `${middleToUpperCase}${middleToLowerCase}`;
+  }
+}
+
+// MAKE LASTNAME:
+function prepareLastname(fullName) {
+  let lastname1 = fullName.substring(fullName.lastIndexOf(" ")); // finds word after last " ".
+  let lastnameTrim = lastname1.trim();
+  let lastToUpperCase = lastnameTrim.substring(0, 1).toUpperCase();
+  let lastToLowerCase = lastnameTrim.substring(1).toLowerCase();
+  return `${lastToUpperCase}${lastToLowerCase}`;
+
+  // (fullName.includes("-"))
+}
+
 // FIND NICKNAME:
-function findNickName(fullName) {
+function prepareNickName(fullName) {
   let bloodyNickName;
   if (fullName.includes("ernie")) {
     bloodyNickName = fullName.substring(fullName.indexOf(" "), fullName.lastIndexOf(" "));
@@ -142,36 +152,35 @@ function findNickName(fullName) {
   //let nickname = fullName.substring(fullName.indexOf("\\") + 2, fullName.lastIndexOf("\\")); // a double backslash equals one i " "
   //console.log("nickname is:", nickname);
 }
-// IMAGE function, return values to function above - not properly though:
+// PREPARE IMAGE:
 function haveImg(fullName) {
   // images are displayed with the last name and first letter of the first name:
   let imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, 1).toLowerCase()}.png`;
-  // not working - tried to trim down name of image only to lastname_first letter. Not working either!
-  //let img2 = imgSrc.substring(imgSrc.lastIndexOf("/") + 1);
+
   // for special cases:
 
   // if img has no lastname:
   if (fullName === "Leanne") {
-    //console.log("imgSrc Leanne = `No_Image`");
     return (imgSrc = `No_Image`);
     //
   }
 
   // if it includes "-" name:
   else if (fullName.includes("-")) {
-    //console.log((imgSrc = `../images/${fullName.substring(fullName.lastIndexOf("-") + 1).toLowerCase()}_${fullName.substring(0, 1).toLowerCase()}.png`));
     return (imgSrc = `../images/${fullName.substring(fullName.lastIndexOf("-") + 1).toLowerCase()}_${fullName.substring(0, 1).toLowerCase()}.png`);
   }
 
   // include two surname patil:
   else if (fullName.toLowerCase().includes("patil")) {
-    // console.log((imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, fullName.indexOf(" ")).toLowerCase()}.png`));
     return (imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, fullName.indexOf(" ")).toLowerCase()}.png`);
   }
 
   // return img2;
   return imgSrc;
-  // console.log(imgSrc);
+}
+
+function prepareBloodStatus() {
+  console.log("prepareBloodStatus loaded");
 }
 
 // ----------------- CONTROLLER -------------------
@@ -283,15 +292,17 @@ function sortList(sortBy, sortDirect) {
 
 // ADD PREFECTS AND TO SQUAD:
 
-function addPrefect(event) {
+function addPrefect(student) {
   console.log("addPrefect func loaded");
 
-  // isPrefect set to true
-  isPrefect = true; // ej, her sættes flag jo bare til true, det er nok ikke rigtigt!
-  console.log("this.student is", isPrefect); // får true - men kan ikke ses på liste over prefects.
-  //
-  // check only two prefects per house
-  // display pop up again with added student?
+  // set isPrefect to true:
+  this.student.isPrefect = true;
+  console.log("this.student.isPrefect", this.student.isPrefect);
+
+  // add new prefect to filteredList - not necessary?
+
+  // check only two prefects per house:
+  // display pop ups with prefect students:
 }
 
 function addToSquad(student) {
@@ -300,6 +311,13 @@ function addToSquad(student) {
   // isSquad set to true
 
   // display pop up again with added student?
+}
+
+function expelStudent(student) {
+  console.log("expelStudent func loaded");
+
+  // set isExpelled to true:
+  // remove student from list of students:
 }
 
 //  --------------------- VIEW --------------------------
@@ -327,8 +345,9 @@ function displayStudent(student) {
   clone.querySelector("[data-field=house]").textContent = student.house;
   clone.querySelector("[data-field=firstname]").addEventListener("click", () => showPopUp(student));
   // eventlisteners for buttons:
-  clone.querySelector("#button_prefect").addEventListener("click", () => addPrefect(event));
-  clone.querySelector("#button_squad").addEventListener("click", () => addToSquad(event));
+  clone.querySelector("#button_prefect").addEventListener("click", () => addPrefect(student));
+  clone.querySelector("#button_squad").addEventListener("click", () => addToSquad(student));
+  clone.querySelector("#button_expel").addEventListener("click", () => expelStudent(student));
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
@@ -342,7 +361,7 @@ function showPopUp(student) {
   popup.style.display = "block";
   // define content:
   popup.querySelector(".art_h2").textContent = student.firstname + " " + student.lastname;
-  //popup.querySelector(".art_image").src = student.image;
+  popup.querySelector("[data-field=image]").src = student.image;
   popup.querySelector(".art_firstname").textContent = student.firstname;
   popup.querySelector(".art_middlename").textContent = student.middlename;
   popup.querySelector(".art_lastname").textContent = student.lastname;

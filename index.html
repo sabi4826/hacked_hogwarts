@@ -16,6 +16,11 @@
 </head>
 <body>
 
+  <form>
+    <label for="search">Search:</label>
+    <input type="search" id="search" name="search">
+  </form>
+
     <h1>Hogwarts Students</h1>
         
         <button class="filter" data-action="filter" data-filter="gryffindor" id="button_gryffindor">Gryffindor students</button>
@@ -38,6 +43,7 @@
           <th>Image</th>
           <th data-action="sort" data-sort-direction="asc" data-sort="house">House</th>
         </tr>
+        <label for="number"><input type="number" class="list_numbers"></label>
       </thead>
       <tbody>
         <!-- Hogwarts template will be copied and inserted here -->
@@ -55,6 +61,7 @@
         <td data-field="house">HOUSE</td>
         <td><button class="prefectmember" id="button_prefect">Make prefect</button></td>
         <td><button class="squadmember" id="button_squad">Add to Inqusitorial Squad</button></td>
+        <td><button class="remove_squadmember" id="button_remove_squad">Remove from Inqusitorial Squad</button></td>
         <td><button class="expel_student" id="button_expel">Expel student</button></td>
       </tr>
     </template>
@@ -70,6 +77,7 @@
       <p>Nick name: <span class="art_nickname"></span></p>
       <p>Gender: <span class="art_gender"></span></p>
       <p>House: <span class="art_house"></span></p>
+      <img class="popup_crest" src="" alt="" data-field="image">
       <p>Prefect: <span class="art_prefect"></span></p>
       <p>Member of Inqusitorial Squad: <span class="art_squad"></span></p>
       <p>Blood status: <span class="art_blood"></span></p>

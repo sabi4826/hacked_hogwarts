@@ -75,3 +75,19 @@ font-size: 2.2rem;
     width: 15vw;
     height: auto;
 }
+
+.pop_gryffindor {
+    background-color: B31A11;
+}
+
+.pop_hufflepuff {
+    background-color: FFE20C;
+}
+
+.pop_ravenclaw{
+    background-color: 0F18B8;
+}
+
+.pop_slytherin{
+    background-color: 29B801;
+}

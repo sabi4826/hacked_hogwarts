@@ -1,5 +1,7 @@
 "use strict";
 
+// link to family names arrays: https://petlatkea.dk/2021/hogwarts/families.json
+
 // ------------------ MODEL ---------------------
 
 window.addEventListener("DOMContentLoaded", start);
@@ -20,7 +22,7 @@ const Student = {
   isExpelled: false,
   isPrefect: false,
   isSquad: false,
-  bloodStatus: "",
+  //bloodStatus: "",
 };
 
 function start() {
@@ -35,6 +37,7 @@ function start() {
   loadJSON();
 }
 
+// fetch JSON for students:
 function loadJSON() {
   fetch("https://petlatkea.dk/2021/hogwarts/students.json")
     .then((response) => response.json())
@@ -44,6 +47,14 @@ function loadJSON() {
     });
 }
 
+// fetch JSON for blood status:
+/* async function loadBloodJSON(url, prepareBloodStatus) {
+  const response = await fetch(url);
+  const jsonBlood = await response.json();
+  prepareBloodStatus(jsonBlood);
+} */
+
+// prepare JSON for students:
 function prepareObjects(jsonData) {
   jsonData.forEach((jsonObject) => {
     // create new object with cleaned data - and store that in the allStudents array
@@ -80,9 +91,10 @@ function prepareObjects(jsonData) {
     let studentHouse = `${houseToUpperCase}${houseToLowerCase}`;
 
     // BLOOD STATUS:
-    let theBloodStatus = prepareBloodStatus();
+    //let theBloodStatus = loadBloodJSON("https:petlatkea.dk/2021/hogwarts/families.json", prepareBloodStatus);
+    //let theBloodStatus = fullName, prepareBloodStatus);
 
-    // SET MORE PROPERTIES FOR OBJECT HERE? (PREFECT, SQUAD, BLOOD):
+    // SET MORE PROPERTIES FOR OBJECT HERE? (BLOOD):
 
     // set new properties to object values (the new object (student) created from prototype) - kan også gøres direkte uden lets først:
     student.firstname = firstname;
@@ -92,7 +104,7 @@ function prepareObjects(jsonData) {
     student.image = image;
     student.house = studentHouse;
     student.gender = gender;
-    //student.bloodStatus: var here??
+    //student.bloodStatus = theBloodStatus;
 
     // eventlisteners on all students for popup:
     document.querySelectorAll("student.firstname").forEach((name) => name.addEventListener("click", showPopUp));
@@ -177,9 +189,20 @@ function haveImg(fullName) {
   return imgSrc;
 }
 
-function prepareBloodStatus() {
+// how to access student etc.: NOT WORKING!! MAYBE AN EXTRA FUNCTION - PROBLEM WITH RETURN, HOW CAN IT RETURN TO BLOODSTATUS?
+/* function prepareBloodStatus(json) {
   console.log("prepareBloodStatus loaded");
-}
+
+  jsonBlood.forEach((jsonObject) => {
+    if (student.lastname === "pure"[i]) {
+      return `pureblood`;
+    } else if (student.lastname === "half"[i]) {
+      return `halfblood`;
+    } else {
+      return `muggle`;
+    }
+  });
+} */
 
 // ----------------- CONTROLLER -------------------
 
@@ -196,6 +219,8 @@ function filterList(filter) {
   // see which filter was picked: ("gryffindor" etc. comes from data-filter in filter in HTML):
   if (filter === "expelled") {
     filteredList = allStudents.filter(isExpelled);
+  } else if (filter === "inrolled") {
+    filteredList = allStudents.filter(isCurrent);
   } else if (filter === "gryffindor") {
     filteredList = allStudents.filter(isGryffindor);
   } else if (filter === "ravenclaw") {
@@ -218,7 +243,11 @@ function filterList(filter) {
 function isExpelled(student) {
   // isExpelled set as flag in Object, set to false by default:
   return student.isExpelled === true;
-  // TO DO: call function here that removes student from all list? Or do it here?
+}
+
+function isCurrent(student) {
+  // here students set to "not expelled" will be shown in current list:
+  return student.isExpelled === false;
 }
 
 function isGryffindor(student) {
@@ -297,6 +326,7 @@ function addPrefect(student) {
   student.isPrefect = !student.isPrefect;
   // check only two prefects per house:
   // display pop ups with prefect students:
+  // change text so the button can be used again for removing prefect? Or make new button?
 }
 
 function addToSquad(student) {
@@ -307,15 +337,18 @@ function addToSquad(student) {
   // display pop up again with added student?
 }
 
+function removeSquad(student) {
+  // set to false again:
+  student.isSquad = !student.isSquad;
+}
+
 // EXPEL STUDENT:
 
 function expelStudent(student) {
   console.log("expelStudent func loaded");
-
-  student.isExpelled = !student.isExpelled;
   // set isExpelled to true:
-  // remove student from list of students:
-  // how?
+  student.isExpelled = !student.isExpelled;
+  // REMEMBER - YOU CAN PROBABLY USE SPLICE TO INSERT STUDENT/YOURSELF IN ARRAY IN HACKING!
 }
 
 //  --------------------- VIEW --------------------------
@@ -325,6 +358,9 @@ function expelStudent(student) {
 function displayList(studentList) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
+
+  // show number of students on each list in input field:
+  document.querySelector(".list_numbers").value = studentList.length;
 
   // build a new list - studentList is the parameter, receives different arrays:
   studentList.forEach(displayStudent);
@@ -346,6 +382,7 @@ function displayStudent(student) {
   // eventlisteners for buttons:
   clone.querySelector("#button_prefect").addEventListener("click", () => addPrefect(student));
   clone.querySelector("#button_squad").addEventListener("click", () => addToSquad(student));
+  clone.querySelector("#button_remove_squad").addEventListener("click", () => removeSquad(student));
   clone.querySelector("#button_expel").addEventListener("click", () => expelStudent(student));
 
   // append clone to list:

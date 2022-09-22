@@ -8,6 +8,11 @@ window.addEventListener("DOMContentLoaded", start);
 
 // empty array for cloning new Object:
 const allStudents = [];
+let jsonBlood;
+let theJSONData;
+// other arrays:
+
+let numberOfJsonFilesLoaded = 0;
 
 // Make prototype (capital first letter) with empty properties:
 const Student = {
@@ -18,11 +23,11 @@ const Student = {
   image: "",
   house: "",
   gender: "",
+  //bloodStatus: "",
   // flag on expelled or not/isPrefect/isSquad, set to false:
   isExpelled: false,
   isPrefect: false,
   isSquad: false,
-  //bloodStatus: "",
 };
 
 function start() {
@@ -35,6 +40,8 @@ function start() {
   document.querySelectorAll("[data-action = 'sort']").forEach((button) => button.addEventListener("click", selectSort));
 
   loadJSON();
+
+  loadBloodJSON("https:petlatkea.dk/2021/hogwarts/families.json");
 }
 
 // fetch JSON for students:
@@ -43,17 +50,30 @@ function loadJSON() {
     .then((response) => response.json())
     .then((jsonData) => {
       // when loaded, prepare objects
-      prepareObjects(jsonData);
+      theJSONData = jsonData;
+      numberOfJsonFilesLoaded++;
+      jsonFileLoaded();
+      //prepareObjects(jsonData);
     });
 }
 
 // fetch JSON for blood status:
-/* async function loadBloodJSON(url, prepareBloodStatus) {
+async function loadBloodJSON(url) {
   const response = await fetch(url);
-  const jsonBlood = await response.json();
-  prepareBloodStatus(jsonBlood);
-} */
+  jsonBlood = await response.json();
+  numberOfJsonFilesLoaded++;
+  jsonFileLoaded();
+  //
+}
 
+function jsonFileLoaded() {
+  if (numberOfJsonFilesLoaded === 2) {
+    // start det hele her hvor begge JSON filer er loadede
+    console.log("BEGGE JSON FILER ER LOADEDE", jsonBlood);
+    //prepareBloodStatus(jsonBlood);
+    prepareObjects(theJSONData);
+  }
+}
 // prepare JSON for students:
 function prepareObjects(jsonData) {
   jsonData.forEach((jsonObject) => {
@@ -90,12 +110,6 @@ function prepareObjects(jsonData) {
     let houseToLowerCase = trimHouse.substring(1).toLowerCase();
     let studentHouse = `${houseToUpperCase}${houseToLowerCase}`;
 
-    // BLOOD STATUS:
-    //let theBloodStatus = loadBloodJSON("https:petlatkea.dk/2021/hogwarts/families.json", prepareBloodStatus);
-    //let theBloodStatus = fullName, prepareBloodStatus);
-
-    // SET MORE PROPERTIES FOR OBJECT HERE? (BLOOD):
-
     // set new properties to object values (the new object (student) created from prototype) - kan også gøres direkte uden lets først:
     student.firstname = firstname;
     student.middlename = middlename;
@@ -104,7 +118,9 @@ function prepareObjects(jsonData) {
     student.image = image;
     student.house = studentHouse;
     student.gender = gender;
-    //student.bloodStatus = theBloodStatus;
+    // BLOOD STATUS:
+    let theBloodStatus = prepareBloodStatus(student);
+    student.bloodStatus = theBloodStatus;
 
     // eventlisteners on all students for popup:
     document.querySelectorAll("student.firstname").forEach((name) => name.addEventListener("click", showPopUp));
@@ -190,19 +206,20 @@ function haveImg(fullName) {
 }
 
 // how to access student etc.: NOT WORKING!! MAYBE AN EXTRA FUNCTION - PROBLEM WITH RETURN, HOW CAN IT RETURN TO BLOODSTATUS?
-/* function prepareBloodStatus(json) {
-  console.log("prepareBloodStatus loaded");
+function prepareBloodStatus(student) {
+  console.log("Name", student.lastname);
+  console.log("is half", jsonBlood.half.includes(student.lastname));
+  console.log("is pure", jsonBlood.pure.includes(student.lastname));
+  console.log("**************************");
 
-  jsonBlood.forEach((jsonObject) => {
-    if (student.lastname === "pure"[i]) {
-      return `pureblood`;
-    } else if (student.lastname === "half"[i]) {
-      return `halfblood`;
-    } else {
-      return `muggle`;
-    }
-  });
-} */
+  if (jsonBlood.half.includes(student.lastname)) {
+    return `half blood`;
+  } else if (jsonBlood.pure.includes(student.lastname)) {
+    return `pure blood`;
+  } else {
+    return `muggle`;
+  }
+}
 
 // ----------------- CONTROLLER -------------------
 
@@ -406,7 +423,7 @@ function showPopUp(student) {
   popup.querySelector(".art_house").textContent = student.house;
   popup.querySelector(".art_prefect").textContent = student.isPrefect;
   popup.querySelector(".art_squad").textContent = student.isSquad;
-  //popup.querySelector(".art_blood").textContent = student.bloodStatus;
+  popup.querySelector(".art_blood").textContent = student.bloodStatus;
 
   // eventlistener for close button:
   document.querySelector("#pop_close_button").addEventListener("click", () => (popup.style.display = "none"));

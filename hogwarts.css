@@ -91,3 +91,7 @@ font-size: 2.2rem;
 .pop_slytherin{
     background-color: 29B801;
 }
+
+.hide {
+    display: none;
+}

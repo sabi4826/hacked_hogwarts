@@ -1,18 +1,34 @@
 "use strict";
 
-// link to family names arrays: https://petlatkea.dk/2021/hogwarts/families.json
-
 // ------------------ MODEL ---------------------
 
 window.addEventListener("DOMContentLoaded", start);
 
 // empty array for cloning new Object:
 const allStudents = [];
+
+// other arrays:
+const allExpelled = [];
+const allCurrent = [];
+
+let prefectCount = 0;
+let houseCount = 0;
+
+// houses:
+const gryffyHouse = [];
+const ravyHouse = [];
+const huffyHouse = [];
+const slythyHouse = [];
+
+// consts and lets:
+// for the JSON:
 let jsonBlood;
 let theJSONData;
-// other arrays:
-
 let numberOfJsonFilesLoaded = 0;
+
+// for the search field:
+const searchInput = document.querySelector("[data-search]");
+let arrayForSearch = [];
 
 // Make prototype (capital first letter) with empty properties:
 const Student = {
@@ -23,11 +39,12 @@ const Student = {
   image: "",
   house: "",
   gender: "",
-  //bloodStatus: "",
-  // flag on expelled or not/isPrefect/isSquad, set to false:
+  bloodStatus: "",
+  // flag on isExpelled/isPrefect/isSquad/isHacked, set to false:
   isExpelled: false,
   isPrefect: false,
   isSquad: false,
+  isHacked: false,
 };
 
 function start() {
@@ -52,8 +69,8 @@ function loadJSON() {
       // when loaded, prepare objects
       theJSONData = jsonData;
       numberOfJsonFilesLoaded++;
+      // check if file is loaded, call prepare func from there:
       jsonFileLoaded();
-      //prepareObjects(jsonData);
     });
 }
 
@@ -66,21 +83,41 @@ async function loadBloodJSON(url) {
   //
 }
 
+// function checks if both JSON files are loaded before it starts:
 function jsonFileLoaded() {
   if (numberOfJsonFilesLoaded === 2) {
     // start det hele her hvor begge JSON filer er loadede
     console.log("BEGGE JSON FILER ER LOADEDE", jsonBlood);
-    //prepareBloodStatus(jsonBlood);
     prepareObjects(theJSONData);
   }
 }
 // prepare JSON for students:
-function prepareObjects(jsonData) {
-  jsonData.forEach((jsonObject) => {
+function prepareObjects(theJSONData) {
+  // from search bar video: add arrayForSearch [] + remove forEach and replace with .map:
+  arrayForSearch = theJSONData.map((jsonObject) => {
     // create new object with cleaned data - and store that in the allStudents array
 
     // create object from prototype:
     const student = Object.create(Student);
+
+    // eventlistener on search field + anonymous function:
+    searchInput.addEventListener("input", (e) => {
+      const inputSearchValue = e.target.value.toLowerCase();
+      arrayForSearch.forEach((search) => {
+        const isVisible = student.firstname.toLowerCase().includes(inputSearchValue) || student.lastname.toLowerCase().includes(inputSearchValue);
+        search.element.classList.toggle("hide", !isVisible);
+      });
+    });
+
+    // make new arrays for each house:
+    // gryffyHouse = allStudents.map();
+    //console.log("gryffyHouse", gryffyHouse);
+
+    // ravyHouse =
+
+    // huffyHouse =
+
+    // slythyHouse =
 
     // TRIM WHITE SPACE + REMOVE DOUBLE WHITE SPACE:
     let trimFullname = jsonObject.fullname.trim();
@@ -88,7 +125,8 @@ function prepareObjects(jsonData) {
     let trimHouse = jsonObject.house.trim();
     let gender = jsonObject.gender.trim();
 
-    // make lets for the desired categories:
+    // MAKE LETS FOR DESIRED CATEGORIES:
+
     // FIRST NAME:
     let firstname = prepareFirstname(fullName);
 
@@ -127,6 +165,9 @@ function prepareObjects(jsonData) {
 
     // push to empty array allStudents:
     allStudents.push(student);
+
+    // for search bar: return values: removed: element: student/td/template - NOT WORKING!!!
+    return { firstname: student.firstname, lastname: student.lastname, element: "template" };
   });
 
   displayList(allStudents);
@@ -205,12 +246,12 @@ function haveImg(fullName) {
   return imgSrc;
 }
 
-// how to access student etc.: NOT WORKING!! MAYBE AN EXTRA FUNCTION - PROBLEM WITH RETURN, HOW CAN IT RETURN TO BLOODSTATUS?
+// prepare blood status:
 function prepareBloodStatus(student) {
-  console.log("Name", student.lastname);
+  /* console.log("Name", student.lastname);
   console.log("is half", jsonBlood.half.includes(student.lastname));
   console.log("is pure", jsonBlood.pure.includes(student.lastname));
-  console.log("**************************");
+  console.log("**************************"); */
 
   if (jsonBlood.half.includes(student.lastname)) {
     return `half blood`;
@@ -262,6 +303,7 @@ function isExpelled(student) {
   return student.isExpelled === true;
 }
 
+// SHOULD THIS BE DELETED/CHANGED WHEN EXPEL STUDENT IS WORKING PROPERLY??
 function isCurrent(student) {
   // here students set to "not expelled" will be shown in current list:
   return student.isExpelled === false;
@@ -286,6 +328,7 @@ function isSlytherin(student) {
 
 function isPrefect(student) {
   return student.isPrefect === true;
+  prefectCount++; // says unreachable code?
 }
 
 function isSquad(student) {
@@ -342,8 +385,8 @@ function addPrefect(student) {
   // set isPrefect to true:
   student.isPrefect = !student.isPrefect;
   // check only two prefects per house:
-  // display pop ups with prefect students:
-  // change text so the button can be used again for removing prefect? Or make new button?
+
+  // change text so the button can be used again for removing prefect? OR REMOVE FROM POP-UP?
 }
 
 function addToSquad(student) {
@@ -351,13 +394,20 @@ function addToSquad(student) {
 
   // isSquad set to true:
   student.isSquad = !student.isSquad;
-  // display pop up again with added student?
+
+  // MAYBE I CAN HAVE A REMOVE FROM SQUAD BUTTON ON POP UP????
+  // FIX THIS: CHANGE TEXT ON CLICKED BUTTON TO "REMOVE FROM SQUAD":
+  // let clickedSquadButton = event.target.value;
+  // let textSquadButton = document.querySelector("#button_make_squad");
+  // clickedSquadButton.textContent = "Remove from squad";
+  // document.querySelector("#button_make_squad").forEach((textSquadButton) => (textSquadButton.textContent = "Remove from squad"));
 }
 
-function removeSquad(student) {
+// remove squad button doesn't exit anymore, soooo...
+/* function removeSquad(student) {
   // set to false again:
   student.isSquad = !student.isSquad;
-}
+} */
 
 // EXPEL STUDENT:
 
@@ -365,7 +415,31 @@ function expelStudent(student) {
   console.log("expelStudent func loaded");
   // set isExpelled to true:
   student.isExpelled = !student.isExpelled;
-  // REMEMBER - YOU CAN PROBABLY USE SPLICE TO INSERT STUDENT/YOURSELF IN ARRAY IN HACKING!
+
+  // use findIndex() to find students index, use splice() to remove from AllStudents array, use push to add student to allExpelled array.
+
+  // followed example from Andrea:
+  // how to acces the student clicked?? event.target not working I think...
+
+  /* let expelledStudentToFind = event.target.value;
+  console.log("expelledStudentToFind", expelledStudentToFind);
+  const index = allStudents.findIndex((element) => {
+    if (element.firstname === expelledStudentToFind.firstname) {
+      return true;
+    }
+    return false;
+  });
+
+  console.log("index expelled student", index);
+
+  if (index !== -1) {
+    const spliceArray = allStudents.splice(index, 1);
+    console.log("spliceArray", spliceArray);
+    const foundElement = spliceArray[0];
+    console.log("foundElement", foundElement);
+
+    allExpelled.push(foundElement);
+  } */
 }
 
 //  --------------------- VIEW --------------------------
@@ -394,13 +468,57 @@ function displayStudent(student) {
   clone.querySelector("[data-field=nickname]").textContent = student.nickname;
   clone.querySelector("[data-field=image]").src = student.image;
   clone.querySelector("[data-field=house]").textContent = student.house;
+
   // eventlistener on pop up (firstname):
   clone.querySelector("[data-field=firstname]").addEventListener("click", () => showPopUp(student));
   // eventlisteners for buttons:
-  clone.querySelector("#button_prefect").addEventListener("click", () => addPrefect(student));
-  clone.querySelector("#button_squad").addEventListener("click", () => addToSquad(student));
-  clone.querySelector("#button_remove_squad").addEventListener("click", () => removeSquad(student));
+  clone.querySelector("#button_make_prefect").addEventListener("click", () => addPrefect(student));
   clone.querySelector("#button_expel").addEventListener("click", () => expelStudent(student));
+
+  // IF STATEMENTS HERE:
+
+  // squad buttons on Slytherins or purebloods: I think it works now
+  if (jsonBlood.half.includes(student.lastname) === false && jsonBlood.pure.includes(student.lastname)) {
+    clone.querySelector("#button_make_squad").addEventListener("click", () => addToSquad(student));
+  } else if (student.house === "Slytherin") {
+    clone.querySelector("#button_make_squad").addEventListener("click", () => addToSquad(student));
+  } else {
+    clone.querySelector("#button_make_squad").classList.add("hide");
+  }
+
+  // if statement here, if expelled write this on button, if not..:
+
+  // check if PREFECT or not, change text on button:
+  /*  if ((student.isPrefect = true)) {
+    clone.querySelector("#button_make_prefect").textContent = "Make prefect";
+  } else {
+    clone.querySelector("#button_make_prefect").textContent = "Remove as prefect";
+  } */
+
+  // check if EXPELLED, change text on button: DOESN'T WORK!!
+  /*   if ((student.isExpelled = true)) {
+    clone.querySelector("#button_expel").textContent = "Expel student";
+  } else {
+    clone.querySelector("#button_expel").textContent = "Expelled";
+  } */
+
+  // eventlistener on button:   WHY WAS IT I SHOULD DO THIS??? IT FUCKS UP THE FILTERING!!!! :(
+  /* clone.querySelector("#button_expel").addEventListener("click", clickExpel);
+
+  function clickExpel() {
+    if (student.isExpelled === true) {
+      student.isExpelled = false;
+    } else {
+      student.isExpelled = true;
+    }
+  } */
+
+  // check if SQUAD, change text on button: DOESN'T WORK!!
+  /*   if ((student.isSquad = true)) {
+    clone.querySelector("#button_make_squad").textContent = "Add to Inqusitorial Squad";
+  } else {
+    clone.querySelector("#button_make_squad").textContent = "Added to squad";
+  } */
 
   // append clone to list:
   document.querySelector("#list tbody").appendChild(clone);

@@ -27,8 +27,7 @@ let theJSONData;
 let numberOfJsonFilesLoaded = 0;
 
 // for the search field:
-const searchInput = document.querySelector("[data-search]");
-let arrayForSearch = [];
+let searchInput;
 
 // Make prototype (capital first letter) with empty properties:
 const Student = {
@@ -40,7 +39,7 @@ const Student = {
   house: "",
   gender: "",
   bloodStatus: "",
-  // flag on isExpelled/isPrefect/isSquad/isHacked, set to false:
+  // flags on isExpelled/isPrefect/isSquad/isHacked set to false:
   isExpelled: false,
   isPrefect: false,
   isSquad: false,
@@ -56,9 +55,22 @@ function start() {
   // eventlisteners on sort buttons:
   document.querySelectorAll("[data-action = 'sort']").forEach((button) => button.addEventListener("click", selectSort));
 
+  // eventlistener on hacking button:
+  document.querySelector("#hack_site").addEventListener("click", hackTheSystem);
+
   loadJSON();
 
   loadBloodJSON("https:petlatkea.dk/2021/hogwarts/families.json");
+
+  // eventlistener on search field and search for first- and last name:
+  searchInput = document.querySelector("#search");
+  searchInput.addEventListener("input", (e) => {
+    const inputSearchValue = e.target.value.toLowerCase();
+    const searchArray = allStudents.filter((student) => {
+      return student.firstname.toLowerCase().includes(inputSearchValue) || student.lastname.toLowerCase().includes(inputSearchValue);
+    });
+    displayList(searchArray);
+  });
 }
 
 // fetch JSON for students:
@@ -91,23 +103,14 @@ function jsonFileLoaded() {
     prepareObjects(theJSONData);
   }
 }
+
 // prepare JSON for students:
 function prepareObjects(theJSONData) {
-  // from search bar video: add arrayForSearch [] + remove forEach and replace with .map:
-  arrayForSearch = theJSONData.map((jsonObject) => {
+  theJSONData.forEach((jsonObject) => {
     // create new object with cleaned data - and store that in the allStudents array
 
     // create object from prototype:
     const student = Object.create(Student);
-
-    // eventlistener on search field + anonymous function:
-    searchInput.addEventListener("input", (e) => {
-      const inputSearchValue = e.target.value.toLowerCase();
-      arrayForSearch.forEach((search) => {
-        const isVisible = student.firstname.toLowerCase().includes(inputSearchValue) || student.lastname.toLowerCase().includes(inputSearchValue);
-        search.element.classList.toggle("hide", !isVisible);
-      });
-    });
 
     // make new arrays for each house:
     // gryffyHouse = allStudents.map();
@@ -165,9 +168,6 @@ function prepareObjects(theJSONData) {
 
     // push to empty array allStudents:
     allStudents.push(student);
-
-    // for search bar: return values: removed: element: student/td/template - NOT WORKING!!!
-    return { firstname: student.firstname, lastname: student.lastname, element: "template" };
   });
 
   displayList(allStudents);
@@ -250,8 +250,7 @@ function haveImg(fullName) {
 function prepareBloodStatus(student) {
   /* console.log("Name", student.lastname);
   console.log("is half", jsonBlood.half.includes(student.lastname));
-  console.log("is pure", jsonBlood.pure.includes(student.lastname));
-  console.log("**************************"); */
+  console.log("is pure", jsonBlood.pure.includes(student.lastname)); */
 
   if (jsonBlood.half.includes(student.lastname)) {
     return `half blood`;
@@ -377,37 +376,112 @@ function sortList(sortBy, sortDirect) {
   displayList(sortedList);
 }
 
-// ADD PREFECTS AND TO SQUAD:
-
-function addPrefect(student) {
-  console.log("addPrefect func loaded");
-
-  // set isPrefect to true:
-  student.isPrefect = !student.isPrefect;
-  // check only two prefects per house:
-
-  // change text so the button can be used again for removing prefect? OR REMOVE FROM POP-UP?
-}
+// ADD STUDENTS TO SQUAD:
 
 function addToSquad(student) {
   console.log("addToSquad func loaded");
 
   // isSquad set to true:
   student.isSquad = !student.isSquad;
+  document.querySelector("[data-field=squad").classList.remove("hide");
 
-  // MAYBE I CAN HAVE A REMOVE FROM SQUAD BUTTON ON POP UP????
-  // FIX THIS: CHANGE TEXT ON CLICKED BUTTON TO "REMOVE FROM SQUAD":
-  // let clickedSquadButton = event.target.value;
-  // let textSquadButton = document.querySelector("#button_make_squad");
-  // clickedSquadButton.textContent = "Remove from squad";
-  // document.querySelector("#button_make_squad").forEach((textSquadButton) => (textSquadButton.textContent = "Remove from squad"));
+  // remove eventlistener:
+  clone.querySelector("#button_make_squad").removeEventListener("click", () => addToSquad(student));
 }
 
-// remove squad button doesn't exit anymore, soooo...
-/* function removeSquad(student) {
+function removeSquad(student) {
   // set to false again:
   student.isSquad = !student.isSquad;
-} */
+
+  // remove eventlistener:
+  popup.querySelector("#button_remove_squad").removeEventListener("click", () => removeSquad(student));
+
+  hideSquadButton(student);
+}
+
+function hideSquadButton(student) {
+  //console.log("hideSquadButton loaded");
+  popup.querySelector("#button_remove_squad").classList.add(".hide");
+  // send to update list again:
+  showPopUp(student);
+}
+
+// ADD PREFECTS:
+
+function addPrefect(student) {
+  console.log("addPrefect func loaded");
+
+  // set isPrefect to true:
+  student.isPrefect = !student.isPrefect;
+
+  // add symbol:
+  document.querySelector("[data-field=prefect").classList.remove("hide");
+  // check only two prefects per house:
+  testForNumberOfPrefects(student);
+
+  // remove eventlistener:
+  clone.querySelector("#button_make_prefect").removeEventListener("click", () => addPrefect(student));
+}
+
+function removePrefect(student) {
+  console.log("removePrefect loaded");
+  // set to false again:
+  //student.isPrefect = !student.isPrefect;
+  student.isPrefect = false;
+
+  // remove eventlistener:
+  popup.querySelector("#button_remove_prefect").removeEventListener("click", () => removePrefect(student));
+
+  hidePrefectButton(student);
+}
+
+function hidePrefectButton(student) {
+  console.log("hidePrefectButton loaded");
+  popup.querySelector("#button_remove_prefect").classList.add(".hide");
+  // send to update list again:
+  showPopUp(student);
+}
+
+// TEST FOR CHECK FOR TWO PREFECTS - FROM WINNER VIDEOS:
+
+function testForNumberOfPrefects(selectedStudent) {
+  // list of selected prefects:
+  const prefectList = allStudents.filter((student) => student.isPrefect);
+
+  // find length of array:
+  const numberOfPrefects = prefectList.length;
+
+  // find other prefects from same house:
+  let otherPrefectsFromHouse = prefectList.filter((student) => student.house === selectedStudent.house);
+
+  console.log(`There are ${numberOfPrefects} prefects`);
+  //console.log(`The other prefect of this type is ${otherPrefectsFromHouse.name}`); // says undefined (with name, student, house) ca. 7.15 i video
+  //console.log(otherPrefectsFromHouse);
+
+  // if there is another from same house:
+  if (otherPrefectsFromHouse.length >= 3) {
+    console.log("There can only be two prefects from each house!");
+    removeOtherPrefect(otherPrefectsFromHouse);
+  } else if (numberOfPrefects >= 8) {
+    console.log("There can only be 8 prefects!");
+    alert("There can only be 8 prefects in total and only 2 from each house. Please remove one or more from the desired houses and try to add again.");
+  } else {
+    makePrefect(selectedStudent);
+  }
+
+  function removeOtherPrefect(otherPrefectsFromHouse) {
+    // ask user to remove others or ignore:
+    // if ignore, do nothing:
+    // if remove, do:
+    removeExistingPrefect(otherPrefectsFromHouse);
+    makePrefect(selectedStudent);
+  }
+
+  // doesn't make sense? Can't send 8 parameters! Or can I???
+  function removeExistingPrefect(otherPrefectsFromHouse) {}
+
+  function makePrefect(winnerStudent) {}
+}
 
 // EXPEL STUDENT:
 
@@ -415,6 +489,9 @@ function expelStudent(student) {
   console.log("expelStudent func loaded");
   // set isExpelled to true:
   student.isExpelled = !student.isExpelled;
+
+  // remove eventlistener:
+  clone.querySelector("#button_expel").removeEventListener("click", () => expelStudent(student));
 
   // use findIndex() to find students index, use splice() to remove from AllStudents array, use push to add student to allExpelled array.
 
@@ -442,6 +519,41 @@ function expelStudent(student) {
   } */
 }
 
+// HACKING, HACKING, HACKING!!!
+
+function hackTheSystem() {
+  console.log(`You got hacked, bitch!`);
+
+  isHacked = true;
+
+  // insert myself in array: (push)
+
+  // make sure, I can't be expelled:
+
+  // remove squad members after added:
+
+  // fuck up blood status:
+
+  // remove eventlistener(?):
+  // document.querySelector("#hack_site").addEventListener("click", hackTheSystem);
+}
+
+// fuck up blood status: copied from prepareBloodStatus - called from displayStudent???
+function fuckBloodStatus(student) {
+  /* console.log("Name", student.lastname);
+  console.log("is half", jsonBlood.half.includes(student.lastname));
+  console.log("is pure", jsonBlood.pure.includes(student.lastname));
+  console.log("**************************"); */
+
+  if (jsonBlood.half.includes(student.lastname)) {
+    return `pure blood`;
+  } else if (jsonBlood.half && jsonBlood.pure !== student.lastname) {
+    return `pure blood`;
+  }
+
+  jsonBlood.pure.includes(student.lastname);
+}
+
 //  --------------------- VIEW --------------------------
 
 // SHOW LISTS ON FRONTPAGE:
@@ -451,7 +563,7 @@ function displayList(studentList) {
   document.querySelector("#list tbody").innerHTML = "";
 
   // show number of students on each list in input field:
-  document.querySelector(".list_numbers").value = studentList.length;
+  document.querySelector(".list_numbers").textContent = `Number of students:${studentList.length}`;
 
   // build a new list - studentList is the parameter, receives different arrays:
   studentList.forEach(displayStudent);
@@ -486,7 +598,20 @@ function displayStudent(student) {
     clone.querySelector("#button_make_squad").classList.add("hide");
   }
 
-  // if statement here, if expelled write this on button, if not..:
+  // ADD MEDALS: NOT WORKING! SHOWING MEDALS ON ALL - BUT WHEN NOT THERE,ONLY SHOWING MEDALS ON FIRST SELECTED STUDENT!
+  /*  if ((student.isPrefect = true)) {
+    clone.querySelector("[data-field=prefect]").classList.remove("hide");
+  } else {
+    console.log("something here");
+  }
+
+  if ((student.isSquad = true)) {
+    clone.querySelector("[data-field=squad]").classList.remove("hide");
+  } else {
+    console.log("something here");
+  } */
+
+  // if statement here, if EXPELLED write this on button, if not..:
 
   // check if PREFECT or not, change text on button:
   /*  if ((student.isPrefect = true)) {
@@ -543,6 +668,23 @@ function showPopUp(student) {
   popup.querySelector(".art_squad").textContent = student.isSquad;
   popup.querySelector(".art_blood").textContent = student.bloodStatus;
 
+  // eventlisteners on buttons for prefects and squads:
+  if (student.isSquad === true) {
+    popup.querySelector("#button_remove_squad").addEventListener("click", () => removeSquad(student));
+  } else {
+    popup.querySelector("#button_remove_squad").classList.add("hide");
+  }
+
+  if (student.isPrefect === true) {
+    popup.querySelector("#button_remove_prefect").addEventListener("click", () => removePrefect(student));
+  } else {
+    popup.querySelector("#button_remove_prefect").classList.add("hide");
+  }
+
   // eventlistener for close button:
   document.querySelector("#pop_close_button").addEventListener("click", () => (popup.style.display = "none"));
+
+  // remove eventlistener:
+  clone.querySelector("[data-field=firstname]").removeEventListener("click", () => showPopUp(student));
+  document.querySelectorAll("student.firstname").forEach((name) => name.removeEventListener("click", showPopUp));
 }

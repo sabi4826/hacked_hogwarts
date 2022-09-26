@@ -93,5 +93,26 @@ font-size: 2.2rem;
 }
 
 .hide {
-    display: none;
+    /*display: none;*/
+    opacity: 0;
+}
+
+
+/* HACKING */ 
+
+#hack_site {
+    opacity: 2;
+    background-color: darkblue;
+    width: 5vw;
+    height: 5vh;
+    position: relative;
+    cursor: pointer;
+
+}
+
+.hack_p {
+    font-size: 1.4rem;
+    padding: 5px, 3px, 5px, 3px;
+    align-content: center;
+    color: whitesmoke;
 }

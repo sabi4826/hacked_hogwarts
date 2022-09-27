@@ -6,6 +6,7 @@ h1 {
     font-family: 'Cinzel Decorative', cursive;
     font-weight: 400;
     font-size: 6rem;
+    text-align: center;
 }
 
 table, tr, th {
@@ -13,9 +14,19 @@ table, tr, th {
     font-family: 'Playfair Display', serif;
 }
 
-p, td {
+#sorting th {
+    margin-right: 20px;
+}
+
+#search {
+    top: 0;
+    left: 0;
+}
+
+p,
+td {
     font-family: 'Playfair Display', serif;
-    font-size: 2.3rem;
+    font-size: 2.1rem;
 }
 
 [data-field="firstname"],
@@ -24,30 +35,40 @@ p, td {
     cursor: pointer;
 }
 
+button {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-right: 6px;
+}
+
+/* POP UP: */
+
 #popup {
 display: none;
-cursor: pointer;
-background-color: aquamarine;
+/*cursor: pointer;*/
+background-color: black;
 position: fixed;
 top: 0;
 left: 0;
-width: 100vw;
-height: 100vh;
-overflow: scroll;
+width: 40vw;
+height: 92vh;
+border-radius: 40px;
+/*overflow: scroll;*/
 }
 
 #popup article {
-    width: 100vw;
-    height: 100vh;
-    overflow: scroll;
-    display: flex;
-    flex-direction: column;
+    width: 35vw;
+    height: 82vh;
+   /* overflow: scroll;
+display: flex;
+    flex-direction: column;*/
     margin: 0 auto;
     border-radius: 40px;
-    background-color: azure;
+    background-color: rgb(97, 178, 178);
 }
 
 #pop_close_button {
+    color: whitesmoke;
     position: fixed;
     padding: 1em;
     font-size: 1.7em;
@@ -65,17 +86,32 @@ overflow: scroll;
 }
 
 article p {
-    font-size: 2.2rem;
+    font-size: 2rem;
+    margin: 5px;
 }
 
 span {
-font-size: 2.2rem;
+font-size: 2rem;
 }
 
 .popup_image {
     width: 15vw;
     height: auto;
 }
+
+/* .popup_article {
+    display: grid;
+    grid-template-columns: 1fr, 1fr;
+
+}
+
+.popup_grid1 {
+    grid-column-start: 1;
+}
+
+.popup_grid2 {
+    grid-column-start: 2;
+} */
 
 .pop_gryffindor {
     background-color: B31A11;
@@ -93,6 +129,8 @@ font-size: 2.2rem;
     background-color: 29B801;
 }
 
+/* GENEREL HIDE: */ 
+
 .hide {
     /*display: none;*/
     opacity: 0;
@@ -103,8 +141,6 @@ font-size: 2.2rem;
 .hide_warnings {
     visibility: hidden;
 }
-
-/* PREFECTS */
 
 .warning_remove_prefect1 {
     position: fixed;
@@ -123,19 +159,26 @@ font-size: 2.2rem;
     box-shadow: 1px, 3px, 10px, #333;
     background-color: rgb(236, 171, 4);
     opacity: 100%;
-    width: 30vw;
-    height: 20vh;
+    width: 28vw;
+    height: 29vh;
     border-radius: 12px;
-    padding: 2em;
+    padding: 15px;
     position: relative;
 }
 
 .dialog_box h1 {
     font-size: 3rem;
+    padding-top: 0%;
+    text-align: center;
 }
 
-.dialog_box p {
-    font-size: 1.5rem;
+.dialog_box p,
+.remove_a_prefect,
+.remove_b_prefect,
+[data-field="prefectA"], 
+[data-field="prefectB"] {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
 }
 
 .close_prefect_warning1 {

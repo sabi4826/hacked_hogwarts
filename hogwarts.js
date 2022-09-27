@@ -382,7 +382,8 @@ function addToSquad(student) {
 
   // isSquad set to true:
   student.isSquad = !student.isSquad;
-  //document.querySelector("[data-field=squad").classList.remove("hide");
+
+  displayList(allStudents);
 
   // remove eventlistener:
   //document.querySelector("#button_make_squad").removeEventListener("click", () => addToSquad(student));
@@ -444,27 +445,26 @@ function hidePrefectButton(student) {
 function testForNumberOfPrefects(selectedStudent) {
   // list of selected prefects:
   const prefectList = allStudents.filter((student) => student.isPrefect);
-
-  // find length of array:
-  const numberOfPrefects = prefectList.length;
+  console.log("prefectLIst", prefectList);
 
   // find other prefects from same house:
   let otherPrefectsFromHouse = prefectList.filter((student) => student.house === selectedStudent.house);
-  //console.log("otherPrefectsFromHouse is", otherPrefectsFromHouse); // is getting the array of added students
-  console.log(`There are ${numberOfPrefects} prefects`);
+  console.log("otherPrefectsFromHouse is", otherPrefectsFromHouse); // is getting the array of added students
 
   // if there is another prefect from same house:
   if (otherPrefectsFromHouse.length >= 2) {
     console.log("There can only be two prefects from each house!");
     removeOtherPrefect(otherPrefectsFromHouse[0], otherPrefectsFromHouse[1]);
   } else {
+    console.log("Its OK");
     makePrefect(selectedStudent);
   }
 
   // closure:
   function removeOtherPrefect(otherPrefect1, otherPrefect2) {
-    //console.log("otherPrefect..1 is", otherPrefect1); works
-    //console.log("otherPrefect..2 is", otherPrefect2);
+    console.log("otherPrefect..1 is", otherPrefect1);
+
+    console.log("otherPrefect..2 is", otherPrefect2);
 
     // ask user to remove others or ignore:
     // show warning:
@@ -488,24 +488,21 @@ function testForNumberOfPrefects(selectedStudent) {
       document.querySelector("#remove_a_or_b .close_prefect_warning1").removeEventListener("click", closeDialog);
       document.querySelector("#remove_a_or_b .remove_a_prefect").removeEventListener("click", removePrefectA);
       document.querySelector("#remove_a_or_b .remove_b_prefect").removeEventListener("click", removePrefectB);
-
-      // do not make prefect:
-      selectedStudent.isPrefect = false;
     }
 
     // if remove, do:
     function removePrefectA() {
+      console.log("REMOVE A");
       otherPrefect1.isPrefect = false;
-      makePrefect(selectedStudent);
-      displayList(allStudents);
+      makePrefect();
       closeDialog();
     }
 
     // if remove, do:
     function removePrefectB() {
+      console.log("REMOVE B");
       otherPrefect2.isPrefect = false;
-      makePrefect(selectedStudent);
-      displayList(allStudents);
+      makePrefect();
       closeDialog();
     }
   }
@@ -513,6 +510,7 @@ function testForNumberOfPrefects(selectedStudent) {
   // closure:
   function makePrefect() {
     // set isPrefect to true:
+    console.log("MAKEPREFECT selectedStudent", selectedStudent);
     selectedStudent.isPrefect = true;
 
     displayList(allStudents);
@@ -521,38 +519,42 @@ function testForNumberOfPrefects(selectedStudent) {
 
 // EXPEL STUDENT:
 
-function expelStudent(student) {
+function expelStudent(student, event) {
   console.log("expelStudent func loaded");
   // set isExpelled to true:
-  student.isExpelled = !student.isExpelled;
+  student.isExpelled = true;
 
+  // removes expelled student from list:
+  //console.log("event.target.parentNode.parentNode", event.target.parentNode.parentNode);
+  event.target.parentNode.parentNode.style.display = "none";
+  /*
   // remove eventlistener:
-  clone.querySelector("#button_expel").removeEventListener("click", () => expelStudent(student));
+  document.querySelector("#button_expel").removeEventListener("click", caller);
+  */
 
   // use findIndex() to find students index, use splice() to remove from AllStudents array, use push to add student to allExpelled array.
 
   // followed example from Andrea:
-  // how to acces the student clicked?? event.target not working I think...
 
-  /* let expelledStudentToFind = event.target.value;
-  console.log("expelledStudentToFind", expelledStudentToFind);
+  console.log("expelledStudentToFind", student);
   const index = allStudents.findIndex((element) => {
-    if (element.firstname === expelledStudentToFind.firstname) {
+    if (element.firstname === student.firstname && element.lastname === student.lastname) {
       return true;
     }
     return false;
   });
 
-  console.log("index expelled student", index);
+  //console.log("index expelled student", index);
 
   if (index !== -1) {
     const spliceArray = allStudents.splice(index, 1);
-    console.log("spliceArray", spliceArray);
+    //console.log("spliceArray", spliceArray);
     const foundElement = spliceArray[0];
-    console.log("foundElement", foundElement);
+    //console.log("foundElement", foundElement);
 
+    // add to array allExpelled:
     allExpelled.push(foundElement);
-  } */
+  }
 }
 
 // HACKING, HACKING, HACKING!!!
@@ -622,11 +624,11 @@ function displayStudent(student) {
 
   // eventlisteners for buttons:
   clone.querySelector("#button_make_prefect").addEventListener("click", () => addPrefect(student));
-  clone.querySelector("#button_expel").addEventListener("click", () => expelStudent(student));
+  clone.querySelector("#button_expel").addEventListener("click", (event) => expelStudent(student, event));
 
   // IF STATEMENTS HERE:
 
-  // squad buttons on Slytherins or purebloods: I think it works now
+  // eventlisteners on squad buttons on Slytherins or purebloods:
   if (jsonBlood.half.includes(student.lastname) === false && jsonBlood.pure.includes(student.lastname)) {
     clone.querySelector("#button_make_squad").addEventListener("click", () => addToSquad(student));
   } else if (student.house === "Slytherin") {
@@ -659,17 +661,6 @@ function displayStudent(student) {
     clone.querySelector("#button_expel").textContent = "Expel student";
   } else {
     clone.querySelector("#button_expel").textContent = "Expelled";
-  } */
-
-  // eventlistener on button:   WHY WAS IT I SHOULD DO THIS??? IT FUCKS UP THE FILTERING!!!! :(
-  /* clone.querySelector("#button_expel").addEventListener("click", clickExpel);
-
-  function clickExpel() {
-    if (student.isExpelled === true) {
-      student.isExpelled = false;
-    } else {
-      student.isExpelled = true;
-    }
   } */
 
   // append clone to list:

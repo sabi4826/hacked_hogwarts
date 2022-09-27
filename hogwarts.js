@@ -62,7 +62,7 @@ function start() {
 
   loadBloodJSON("https:petlatkea.dk/2021/hogwarts/families.json");
 
-  // eventlistener on search field and search for first- and last name:
+  // eventlistener on search field and search for first and last name:
   searchInput = document.querySelector("#search");
   searchInput.addEventListener("input", (e) => {
     const inputSearchValue = e.target.value.toLowerCase();
@@ -327,7 +327,6 @@ function isSlytherin(student) {
 
 function isPrefect(student) {
   return student.isPrefect === true;
-  prefectCount++; // says unreachable code?
 }
 
 function isSquad(student) {
@@ -383,10 +382,10 @@ function addToSquad(student) {
 
   // isSquad set to true:
   student.isSquad = !student.isSquad;
-  document.querySelector("[data-field=squad").classList.remove("hide");
+  //document.querySelector("[data-field=squad").classList.remove("hide");
 
   // remove eventlistener:
-  clone.querySelector("#button_make_squad").removeEventListener("click", () => addToSquad(student));
+  //document.querySelector("#button_make_squad").removeEventListener("click", () => addToSquad(student));
 }
 
 function removeSquad(student) {
@@ -396,6 +395,7 @@ function removeSquad(student) {
   // remove eventlistener:
   popup.querySelector("#button_remove_squad").removeEventListener("click", () => removeSquad(student));
 
+  displayList(allStudents);
   hideSquadButton(student);
 }
 
@@ -411,18 +411,14 @@ function hideSquadButton(student) {
 function addPrefect(student) {
   console.log("addPrefect func loaded");
 
-  // set isPrefect to true:
-  student.isPrefect = !student.isPrefect;
-
-  // add symbol:
-  document.querySelector("[data-field=prefect").classList.remove("hide");
   // check only two prefects per house:
   testForNumberOfPrefects(student);
 
   // remove eventlistener:
-  clone.querySelector("#button_make_prefect").removeEventListener("click", () => addPrefect(student));
+  document.querySelector("#button_make_prefect").removeEventListener("click", () => addPrefect(student));
 }
 
+// for remove button on pop up:
 function removePrefect(student) {
   console.log("removePrefect loaded");
   // set to false again:
@@ -433,6 +429,7 @@ function removePrefect(student) {
   popup.querySelector("#button_remove_prefect").removeEventListener("click", () => removePrefect(student));
 
   hidePrefectButton(student);
+  displayList(allStudents);
 }
 
 function hidePrefectButton(student) {
@@ -442,7 +439,7 @@ function hidePrefectButton(student) {
   showPopUp(student);
 }
 
-// TEST FOR CHECK FOR TWO PREFECTS - FROM WINNER VIDEOS:
+// CHECK FOR TWO PREFECTS - FROM WINNER VIDEOS:
 
 function testForNumberOfPrefects(selectedStudent) {
   // list of selected prefects:
@@ -453,34 +450,73 @@ function testForNumberOfPrefects(selectedStudent) {
 
   // find other prefects from same house:
   let otherPrefectsFromHouse = prefectList.filter((student) => student.house === selectedStudent.house);
-
+  //console.log("otherPrefectsFromHouse is", otherPrefectsFromHouse); // is getting the array of added students
   console.log(`There are ${numberOfPrefects} prefects`);
-  //console.log(`The other prefect of this type is ${otherPrefectsFromHouse.name}`); // says undefined (with name, student, house) ca. 7.15 i video
-  //console.log(otherPrefectsFromHouse);
 
-  // if there is another from same house:
-  if (otherPrefectsFromHouse.length >= 3) {
+  // if there is another prefect from same house:
+  if (otherPrefectsFromHouse.length >= 2) {
     console.log("There can only be two prefects from each house!");
-    removeOtherPrefect(otherPrefectsFromHouse);
-  } else if (numberOfPrefects >= 8) {
-    console.log("There can only be 8 prefects!");
-    alert("There can only be 8 prefects in total and only 2 from each house. Please remove one or more from the desired houses and try to add again.");
+    removeOtherPrefect(otherPrefectsFromHouse[0], otherPrefectsFromHouse[1]);
   } else {
     makePrefect(selectedStudent);
   }
 
-  function removeOtherPrefect(otherPrefectsFromHouse) {
+  // closure:
+  function removeOtherPrefect(otherPrefect1, otherPrefect2) {
+    //console.log("otherPrefect..1 is", otherPrefect1); works
+    //console.log("otherPrefect..2 is", otherPrefect2);
+
     // ask user to remove others or ignore:
+    // show warning:
+    document.querySelector("#remove_a_or_b").classList.remove("hide_warnings");
+
+    // eventlisteners on buttons:
+    document.querySelector("#remove_a_or_b .close_prefect_warning1").addEventListener("click", closeDialog);
+    document.querySelector("#remove_a_or_b .remove_a_prefect").addEventListener("click", removePrefectA);
+    document.querySelector("#remove_a_or_b .remove_b_prefect").addEventListener("click", removePrefectB);
+
+    // show names on buttons:
+    document.querySelector("#remove_a_or_b [data-field=prefectA]").textContent = otherPrefect1.firstname;
+    document.querySelector("#remove_a_or_b [data-field=prefectB]").textContent = otherPrefect2.firstname;
+
     // if ignore, do nothing:
+    // closure in closure? - close warning box:
+    function closeDialog() {
+      document.querySelector("#remove_a_or_b").classList.add("hide_warnings");
+
+      // remove eventlisteners:
+      document.querySelector("#remove_a_or_b .close_prefect_warning1").removeEventListener("click", closeDialog);
+      document.querySelector("#remove_a_or_b .remove_a_prefect").removeEventListener("click", removePrefectA);
+      document.querySelector("#remove_a_or_b .remove_b_prefect").removeEventListener("click", removePrefectB);
+
+      // do not make prefect:
+      selectedStudent.isPrefect = false;
+    }
+
     // if remove, do:
-    removeExistingPrefect(otherPrefectsFromHouse);
-    makePrefect(selectedStudent);
+    function removePrefectA() {
+      otherPrefect1.isPrefect = false;
+      makePrefect(selectedStudent);
+      displayList(allStudents);
+      closeDialog();
+    }
+
+    // if remove, do:
+    function removePrefectB() {
+      otherPrefect2.isPrefect = false;
+      makePrefect(selectedStudent);
+      displayList(allStudents);
+      closeDialog();
+    }
   }
 
-  // doesn't make sense? Can't send 8 parameters! Or can I???
-  function removeExistingPrefect(otherPrefectsFromHouse) {}
+  // closure:
+  function makePrefect() {
+    // set isPrefect to true:
+    selectedStudent.isPrefect = true;
 
-  function makePrefect(winnerStudent) {}
+    displayList(allStudents);
+  }
 }
 
 // EXPEL STUDENT:
@@ -583,6 +619,7 @@ function displayStudent(student) {
 
   // eventlistener on pop up (firstname):
   clone.querySelector("[data-field=firstname]").addEventListener("click", () => showPopUp(student));
+
   // eventlisteners for buttons:
   clone.querySelector("#button_make_prefect").addEventListener("click", () => addPrefect(student));
   clone.querySelector("#button_expel").addEventListener("click", () => expelStudent(student));
@@ -598,27 +635,24 @@ function displayStudent(student) {
     clone.querySelector("#button_make_squad").classList.add("hide");
   }
 
+  // Prefects (following winners video): but it is alreade called on the button?
+
+  /*  clone.querySelector("[data-field=prefect]").dataset.isPrefect = isPrefect;
+  clone.querySelector("[data-field=prefect]").addEventListener("click", addPrefect); */
+
   // ADD MEDALS: NOT WORKING! SHOWING MEDALS ON ALL - BUT WHEN NOT THERE,ONLY SHOWING MEDALS ON FIRST SELECTED STUDENT!
-  /*  if ((student.isPrefect = true)) {
-    clone.querySelector("[data-field=prefect]").classList.remove("hide");
+  // add symbol:
+  if (student.isPrefect === true) {
+    clone.querySelector("[data-field=prefect]").textContent = "🏆";
   } else {
-    console.log("something here");
+    clone.querySelector("[data-field=prefect]").textContent = "🚫";
   }
 
-  if ((student.isSquad = true)) {
-    clone.querySelector("[data-field=squad]").classList.remove("hide");
+  if (student.isSquad === true) {
+    clone.querySelector("[data-field=squad]").textContent = "🏅";
   } else {
-    console.log("something here");
-  } */
-
-  // if statement here, if EXPELLED write this on button, if not..:
-
-  // check if PREFECT or not, change text on button:
-  /*  if ((student.isPrefect = true)) {
-    clone.querySelector("#button_make_prefect").textContent = "Make prefect";
-  } else {
-    clone.querySelector("#button_make_prefect").textContent = "Remove as prefect";
-  } */
+    clone.querySelector("[data-field=squad]").textContent = "🚫";
+  }
 
   // check if EXPELLED, change text on button: DOESN'T WORK!!
   /*   if ((student.isExpelled = true)) {
@@ -636,13 +670,6 @@ function displayStudent(student) {
     } else {
       student.isExpelled = true;
     }
-  } */
-
-  // check if SQUAD, change text on button: DOESN'T WORK!!
-  /*   if ((student.isSquad = true)) {
-    clone.querySelector("#button_make_squad").textContent = "Add to Inqusitorial Squad";
-  } else {
-    clone.querySelector("#button_make_squad").textContent = "Added to squad";
   } */
 
   // append clone to list:
@@ -684,7 +711,7 @@ function showPopUp(student) {
   // eventlistener for close button:
   document.querySelector("#pop_close_button").addEventListener("click", () => (popup.style.display = "none"));
 
-  // remove eventlistener:
-  clone.querySelector("[data-field=firstname]").removeEventListener("click", () => showPopUp(student));
+  // remove eventlisteners:
+  document.querySelector("[data-field=firstname]").removeEventListener("click", () => showPopUp(student));
   document.querySelectorAll("student.firstname").forEach((name) => name.removeEventListener("click", showPopUp));
 }

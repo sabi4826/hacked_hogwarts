@@ -37,12 +37,13 @@ overflow: scroll;
 }
 
 #popup article {
-    width: 98vw;
-    height: 98vh;
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    border-radius: 25px;
+    border-radius: 40px;
     background-color: azure;
 }
 
@@ -95,6 +96,54 @@ font-size: 2.2rem;
 .hide {
     /*display: none;*/
     opacity: 0;
+}
+
+/* WARNING MODALS: */
+
+.hide_warnings {
+    visibility: hidden;
+}
+
+/* PREFECTS */
+
+.warning_remove_prefect1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(201, 198, 198);
+    opacity: 97%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog_box {
+    box-shadow: 1px, 3px, 10px, #333;
+    background-color: rgb(236, 171, 4);
+    opacity: 100%;
+    width: 30vw;
+    height: 20vh;
+    border-radius: 12px;
+    padding: 2em;
+    position: relative;
+}
+
+.dialog_box h1 {
+    font-size: 3rem;
+}
+
+.dialog_box p {
+    font-size: 1.5rem;
+}
+
+.close_prefect_warning1 {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 25%;
+    cursor: pointer;
 }
 
 

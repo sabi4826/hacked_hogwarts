@@ -11,14 +11,15 @@ const allStudents = [];
 const allExpelled = [];
 const allCurrent = [];
 
-let prefectCount = 0;
-let houseCount = 0;
+let student;
+const sabineAsStudent = {
+  firstname: "Sabine",
+  lastname: "Ovesen",
+  gender: "hacker",
+  house: "Slytherin",
+};
 
-// houses:
-const gryffyHouse = [];
-const ravyHouse = [];
-const huffyHouse = [];
-const slythyHouse = [];
+let isHackedFlag = false;
 
 // consts and lets:
 // for the JSON:
@@ -39,16 +40,13 @@ const Student = {
   house: "",
   gender: "",
   bloodStatus: "",
-  // flags on isExpelled/isPrefect/isSquad/isHacked set to false:
+  // flags on isExpelled/isPrefect/isSquad set to false:
   isExpelled: false,
   isPrefect: false,
   isSquad: false,
-  isHacked: false,
 };
 
 function start() {
-  console.log("Ready");
-
   // eventlisteners on filter buttons:
   document.querySelectorAll("[data-action='filter']").forEach((button) => button.addEventListener("click", selectFilter));
 
@@ -110,17 +108,7 @@ function prepareObjects(theJSONData) {
     // create new object with cleaned data - and store that in the allStudents array
 
     // create object from prototype:
-    const student = Object.create(Student);
-
-    // make new arrays for each house:
-    // gryffyHouse = allStudents.map();
-    //console.log("gryffyHouse", gryffyHouse);
-
-    // ravyHouse =
-
-    // huffyHouse =
-
-    // slythyHouse =
+    student = Object.create(Student);
 
     // TRIM WHITE SPACE + REMOVE DOUBLE WHITE SPACE:
     let trimFullname = jsonObject.fullname.trim();
@@ -275,10 +263,11 @@ function filterList(filter) {
 
   // see which filter was picked: ("gryffindor" etc. comes from data-filter in filter in HTML):
   if (filter === "expelled") {
-    filteredList = allStudents.filter(isExpelled);
-  } else if (filter === "inrolled") {
+    // send array for expelled students:
+    filteredList = allExpelled;
+  } /* else if (filter === "inrolled") {
     filteredList = allStudents.filter(isCurrent);
-  } else if (filter === "gryffindor") {
+  } */ else if (filter === "gryffindor") {
     filteredList = allStudents.filter(isGryffindor);
   } else if (filter === "ravenclaw") {
     filteredList = allStudents.filter(isRavenclaw);
@@ -295,17 +284,6 @@ function filterList(filter) {
   console.log("filteredList is", filteredList);
 
   displayList(filteredList);
-}
-
-function isExpelled(student) {
-  // isExpelled set as flag in Object, set to false by default:
-  return student.isExpelled === true;
-}
-
-// SHOULD THIS BE DELETED/CHANGED WHEN EXPEL STUDENT IS WORKING PROPERLY??
-function isCurrent(student) {
-  // here students set to "not expelled" will be shown in current list:
-  return student.isExpelled === false;
 }
 
 function isGryffindor(student) {
@@ -385,6 +363,18 @@ function addToSquad(student) {
 
   displayList(allStudents);
 
+  // IF HACKED: remove added squad members:
+  if (isHackedFlag === true) {
+    setTimeout(squadAnimation, 1500);
+  }
+
+  function squadAnimation() {
+    // animation not working, but medal comes of after 1,5 seconds:
+    document.querySelector("#button_make_squad").classList.add("remove_squad_member_container");
+    student.isSquad = false;
+    displayList(allStudents);
+  }
+
   // remove eventlistener:
   //document.querySelector("#button_make_squad").removeEventListener("click", () => addToSquad(student));
 }
@@ -445,27 +435,19 @@ function hidePrefectButton(student) {
 function testForNumberOfPrefects(selectedStudent) {
   // list of selected prefects:
   const prefectList = allStudents.filter((student) => student.isPrefect);
-  console.log("prefectLIst", prefectList);
 
   // find other prefects from same house:
   let otherPrefectsFromHouse = prefectList.filter((student) => student.house === selectedStudent.house);
-  console.log("otherPrefectsFromHouse is", otherPrefectsFromHouse); // is getting the array of added students
 
   // if there is another prefect from same house:
   if (otherPrefectsFromHouse.length >= 2) {
-    console.log("There can only be two prefects from each house!");
     removeOtherPrefect(otherPrefectsFromHouse[0], otherPrefectsFromHouse[1]);
   } else {
-    console.log("Its OK");
     makePrefect(selectedStudent);
   }
 
   // closure:
   function removeOtherPrefect(otherPrefect1, otherPrefect2) {
-    console.log("otherPrefect..1 is", otherPrefect1);
-
-    console.log("otherPrefect..2 is", otherPrefect2);
-
     // ask user to remove others or ignore:
     // show warning:
     document.querySelector("#remove_a_or_b").classList.remove("hide_warnings");
@@ -492,7 +474,6 @@ function testForNumberOfPrefects(selectedStudent) {
 
     // if remove, do:
     function removePrefectA() {
-      console.log("REMOVE A");
       otherPrefect1.isPrefect = false;
       makePrefect();
       closeDialog();
@@ -500,7 +481,6 @@ function testForNumberOfPrefects(selectedStudent) {
 
     // if remove, do:
     function removePrefectB() {
-      console.log("REMOVE B");
       otherPrefect2.isPrefect = false;
       makePrefect();
       closeDialog();
@@ -527,10 +507,6 @@ function expelStudent(student, event) {
   // removes expelled student from list:
   //console.log("event.target.parentNode.parentNode", event.target.parentNode.parentNode);
   event.target.parentNode.parentNode.style.display = "none";
-  /*
-  // remove eventlistener:
-  document.querySelector("#button_expel").removeEventListener("click", caller);
-  */
 
   // use findIndex() to find students index, use splice() to remove from AllStudents array, use push to add student to allExpelled array.
 
@@ -543,8 +519,6 @@ function expelStudent(student, event) {
     }
     return false;
   });
-
-  //console.log("index expelled student", index);
 
   if (index !== -1) {
     const spliceArray = allStudents.splice(index, 1);
@@ -562,34 +536,35 @@ function expelStudent(student, event) {
 function hackTheSystem() {
   console.log(`You got hacked, bitch!`);
 
-  isHacked = true;
+  isHackedFlag = true;
 
-  // insert myself in array: (push)
+  // enter myself in array:
+  allStudents.push(sabineAsStudent);
 
-  // make sure, I can't be expelled:
+  displayList(allStudents);
 
-  // remove squad members after added:
+  // make sure, I can't be expelled: yes (no expel button for me).
 
-  // fuck up blood status:
+  // remove squad members after added: not pretty, but yes.
+
+  // fuck up blood status: yes, but not for purebloods.
 
   // remove eventlistener(?):
   // document.querySelector("#hack_site").addEventListener("click", hackTheSystem);
 }
 
-// fuck up blood status: copied from prepareBloodStatus - called from displayStudent???
-function fuckBloodStatus(student) {
-  /* console.log("Name", student.lastname);
-  console.log("is half", jsonBlood.half.includes(student.lastname));
-  console.log("is pure", jsonBlood.pure.includes(student.lastname));
-  console.log("**************************"); */
-
+// fuck up blood status:
+function fuckBloodStatus() {
   if (jsonBlood.half.includes(student.lastname)) {
     return `pure blood`;
   } else if (jsonBlood.half && jsonBlood.pure !== student.lastname) {
     return `pure blood`;
   }
 
-  jsonBlood.pure.includes(student.lastname);
+  // MISSING: math for purebloods:
+  // else if (jsonBlood.pure.includes(student.lastname) {
+  //   some Math.random here...
+  // };
 }
 
 //  --------------------- VIEW --------------------------
@@ -600,7 +575,7 @@ function displayList(studentList) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
 
-  // show number of students on each list in input field:
+  // show number of students on each list:
   document.querySelector(".list_numbers").textContent = `Number of students:${studentList.length}`;
 
   // build a new list - studentList is the parameter, receives different arrays:
@@ -637,13 +612,16 @@ function displayStudent(student) {
     clone.querySelector("#button_make_squad").classList.add("hide");
   }
 
-  // Prefects (following winners video): but it is alreade called on the button?
+  // if hacking:
+  if (student.firstname === "Sabine") {
+    clone.querySelector("#button_expel").classList.add("hide");
+  }
 
-  /*  clone.querySelector("[data-field=prefect]").dataset.isPrefect = isPrefect;
-  clone.querySelector("[data-field=prefect]").addEventListener("click", addPrefect); */
+  if (isHackedFlag === true) {
+    student.bloodStatus = fuckBloodStatus();
+  }
 
-  // ADD MEDALS: NOT WORKING! SHOWING MEDALS ON ALL - BUT WHEN NOT THERE,ONLY SHOWING MEDALS ON FIRST SELECTED STUDENT!
-  // add symbol:
+  // ADD SYMBOLS FOR PREFECTS AND SQUAD:
   if (student.isPrefect === true) {
     clone.querySelector("[data-field=prefect]").textContent = "🏆";
   } else {
@@ -655,13 +633,6 @@ function displayStudent(student) {
   } else {
     clone.querySelector("[data-field=squad]").textContent = "🚫";
   }
-
-  // check if EXPELLED, change text on button: DOESN'T WORK!!
-  /*   if ((student.isExpelled = true)) {
-    clone.querySelector("#button_expel").textContent = "Expel student";
-  } else {
-    clone.querySelector("#button_expel").textContent = "Expelled";
-  } */
 
   // append clone to list:
   document.querySelector("#list tbody").appendChild(clone);

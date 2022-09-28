@@ -19,12 +19,14 @@ table, tr, th {
 }
 
 #search {
+    font-size: 1.4rem;
     top: 0;
     left: 0;
 }
 
 p,
-td {
+td,
+.search_p {
     font-family: 'Playfair Display', serif;
     font-size: 2.1rem;
 }
@@ -50,18 +52,16 @@ background-color: black;
 position: fixed;
 top: 0;
 left: 0;
-width: 40vw;
-height: 92vh;
+width: 420px;
+height: 630px;
 border-radius: 40px;
 /*overflow: scroll;*/
 }
 
 #popup article {
-    width: 35vw;
-    height: 82vh;
-   /* overflow: scroll;
-display: flex;
-    flex-direction: column;*/
+    align-self: center;
+    width: 386px;
+    height: 580px;
     margin: 0 auto;
     border-radius: 40px;
     background-color: rgb(97, 178, 178);
@@ -95,23 +95,10 @@ font-size: 2rem;
 }
 
 .popup_image {
-    width: 15vw;
+    width: 120px;
     height: auto;
+    margin-left: 133px;
 }
-
-/* .popup_article {
-    display: grid;
-    grid-template-columns: 1fr, 1fr;
-
-}
-
-.popup_grid1 {
-    grid-column-start: 1;
-}
-
-.popup_grid2 {
-    grid-column-start: 2;
-} */
 
 .pop_gryffindor {
     background-color: B31A11;
@@ -193,18 +180,33 @@ font-size: 2rem;
 /* HACKING */ 
 
 #hack_site {
-    opacity: 2;
+    opacity: 0.1;
     background-color: darkblue;
-    width: 5vw;
-    height: 5vh;
+    width: 95px;
+    height: 40px;
     position: relative;
     cursor: pointer;
 
 }
 
 .hack_p {
-    font-size: 1.4rem;
-    padding: 5px, 3px, 5px, 3px;
-    align-content: center;
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 1.5rem;
+    text-align: center;
+    padding-top: 10px;
     color: whitesmoke;
+}
+
+@keyframes remove_squad_member {
+    0%   {background-color:red;}
+  25%  {background-color:yellow;}
+  50%  {background-color:blue;}
+  75%  {background-color:green;}
+  100% {background-color:red;}
+}
+
+.remove_squad_member_container {
+animation-name: remove_squad_member;
+animation-duration: 2s;
+animation-iteration-count: 1;
 }

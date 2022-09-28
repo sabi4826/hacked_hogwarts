@@ -17,6 +17,7 @@ const sabineAsStudent = {
   lastname: "Ovesen",
   gender: "hacker",
   house: "Slytherin",
+  image: ".../files/ovesen_s.png",
 };
 
 let isHackedFlag = false;
@@ -230,16 +231,17 @@ function haveImg(fullName) {
     return (imgSrc = `../images/${fullName.substring(fullName.lastIndexOf(" ") + 1).toLowerCase()}_${fullName.substring(0, fullName.indexOf(" ")).toLowerCase()}.png`);
   }
 
+  // if hacked, insert my image: NOT WORKING!
+  else if (isHackedFlag === true && student.firstname === "Sabine") {
+    return (imgSrc = `../images/ovesen_s.png`);
+  }
+
   // return img2;
   return imgSrc;
 }
 
 // prepare blood status:
 function prepareBloodStatus(student) {
-  /* console.log("Name", student.lastname);
-  console.log("is half", jsonBlood.half.includes(student.lastname));
-  console.log("is pure", jsonBlood.pure.includes(student.lastname)); */
-
   if (jsonBlood.half.includes(student.lastname)) {
     return `half blood`;
   } else if (jsonBlood.pure.includes(student.lastname)) {
@@ -265,9 +267,7 @@ function filterList(filter) {
   if (filter === "expelled") {
     // send array for expelled students:
     filteredList = allExpelled;
-  } /* else if (filter === "inrolled") {
-    filteredList = allStudents.filter(isCurrent);
-  } */ else if (filter === "gryffindor") {
+  } else if (filter === "gryffindor") {
     filteredList = allStudents.filter(isGryffindor);
   } else if (filter === "ravenclaw") {
     filteredList = allStudents.filter(isRavenclaw);
@@ -280,8 +280,6 @@ function filterList(filter) {
   } else if (filter === "squad") {
     filteredList = allStudents.filter(isSquad);
   }
-
-  console.log("filteredList is", filteredList);
 
   displayList(filteredList);
 }
@@ -356,8 +354,6 @@ function sortList(sortBy, sortDirect) {
 // ADD STUDENTS TO SQUAD:
 
 function addToSquad(student) {
-  console.log("addToSquad func loaded");
-
   // isSquad set to true:
   student.isSquad = !student.isSquad;
 
@@ -400,8 +396,6 @@ function hideSquadButton(student) {
 // ADD PREFECTS:
 
 function addPrefect(student) {
-  console.log("addPrefect func loaded");
-
   // check only two prefects per house:
   testForNumberOfPrefects(student);
 
@@ -490,7 +484,6 @@ function testForNumberOfPrefects(selectedStudent) {
   // closure:
   function makePrefect() {
     // set isPrefect to true:
-    console.log("MAKEPREFECT selectedStudent", selectedStudent);
     selectedStudent.isPrefect = true;
 
     displayList(allStudents);
@@ -583,7 +576,6 @@ function displayList(studentList) {
 }
 
 function displayStudent(student) {
-  console.log("displayStudent loaded");
   // create clone:
   const clone = document.querySelector("#hogwarts_template").content.cloneNode(true);
   // set clone data:
@@ -613,7 +605,7 @@ function displayStudent(student) {
   }
 
   // if hacking:
-  if (student.firstname === "Sabine") {
+  if (isHackedFlag === true && student.firstname === "Sabine") {
     clone.querySelector("#button_expel").classList.add("hide");
   }
 

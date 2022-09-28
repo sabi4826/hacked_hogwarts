@@ -14,6 +14,10 @@ table, tr, th {
     font-family: 'Playfair Display', serif;
 }
 
+.filter {
+    margin-bottom: 7px;
+}
+
 #sorting th {
     margin-right: 20px;
 }
